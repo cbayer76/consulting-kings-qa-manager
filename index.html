@@ -55,6 +55,7 @@
   .filters{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
   .filter{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);padding:5px 11px;border-radius:20px}
   .filter.active{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+  .sec-toggle{display:flex;gap:4px}
   .filter-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);align-self:center;margin-right:2px}
 
   .panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:22px;box-shadow:var(--shadow)}
@@ -1159,6 +1160,10 @@ function statsHTML(){
     '<span class="stat"><span class="dot disc"></span>In discussion <b>'+d+'</b></span>'+
     '<span class="stat"><span class="dot solved"></span>Solved <b>'+s+'</b></span>'+
     '<span class="stat">Total <b>'+qs.length+'</b></span>'+
+    '<span class="sec-toggle">'+
+      '<button class="btn ghost tiny" data-action="expand-all" title="Open every section, including solved questions">Expand all</button>'+
+      '<button class="btn ghost tiny" data-action="collapse-all" title="Close every section">Collapse all</button>'+
+    '</span>'+
     '<div class="filters">'+
       '<span class="filter-label">Sections</span>'+
       '<button class="filter '+(f==='all'?'active':'')+'" data-action="filter" data-v="all" title="All sections">All ('+sc.all+')</button>'+
@@ -1902,6 +1907,12 @@ document.addEventListener('click', async function(e){
     }
     case 'filter': UI.filter=t.getAttribute('data-v'); render(); break;
     case 'toggle-section': UI.collapsed[id]=!UI.collapsed[id]; render(); break;
+    case 'expand-all':
+      meetingSections(UI.currentMeetingId).forEach(function(sec){ UI.collapsed[sec.id]=false; UI.solvedCollapsed[sec.id]=false; });
+      render(); break;
+    case 'collapse-all':
+      meetingSections(UI.currentMeetingId).forEach(function(sec){ UI.collapsed[sec.id]=true; delete UI.solvedCollapsed[sec.id]; });
+      render(); break;
     case 'toggle-solved-block':{
       const cur=UI.solvedCollapsed[id]!==false;
       UI.solvedCollapsed[id]=!cur;
