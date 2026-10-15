@@ -1,0 +1,2510 @@
+<title>Consulting Kings Q&A Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Light-only by design: the cream paper look is the brand of this tool. */
+  :root{
+    color-scheme:light;
+    --cream:#f6f1e7; --paper:#fbf8f1; --paper-2:#f1eadc;
+    --ink:#241f1a; --ink-soft:#6b6258; --line:#e3dac9; --line-strong:#d2c6ad;
+    --rose:#b04a63; --rose-soft:#f3e2e6; --gold:#9c7321; --gold-soft:#f4e9cf;
+    --teal:#2f6f69; --teal-soft:#dcebe9; --green:#3f7d54; --green-soft:#e0efe4;
+    --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+    --mono:'IBM Plex Mono','Courier New',monospace;
+    --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --radius:10px; --shadow:0 1px 2px rgba(36,31,26,.05),0 4px 16px rgba(36,31,26,.04);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--rose)}
+  button{font-family:var(--sans);cursor:pointer}
+  input,textarea,select{font-family:var(--sans)}
+
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px 80px}
+  header.brand{border-bottom:1px solid var(--line);padding:30px 0 22px;margin-bottom:26px}
+  .brand-row{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .brand h1{font-family:var(--serif);font-weight:900;letter-spacing:.01em;font-size:30px;margin:0;line-height:1.05}
+  .brand .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--rose);margin:0 0 8px}
+  .brand .sub{font-family:var(--mono);font-size:12px;color:var(--ink-soft);letter-spacing:.04em;margin:6px 0 0}
+
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;box-shadow:var(--shadow);margin-bottom:18px}
+  .who{font-family:var(--mono);font-size:12px;color:var(--ink-soft);letter-spacing:.03em}
+  .who b{color:var(--ink);font-weight:600}
+  .btn{border:1px solid var(--line-strong);background:var(--paper);color:var(--ink);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:500;transition:background .12s,border-color .12s}
+  .btn:hover{background:var(--paper-2)}
+  .btn.primary{background:var(--rose);border-color:var(--rose);color:#fff}
+  .btn.primary:hover{background:#9a4055}
+  .btn.ghost{background:transparent;border-color:transparent;color:var(--ink-soft)}
+  .btn.ghost:hover{color:var(--ink);background:var(--paper-2)}
+  .btn.tiny{padding:4px 9px;font-size:11px;border-radius:6px}
+  .btn.danger{color:var(--rose);border-color:var(--rose-soft)}
+  .btn.danger:hover{background:var(--rose-soft)}
+  .badge-admin{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:var(--gold-soft);color:var(--gold);border:1px solid #e7d39a;padding:2px 7px;border-radius:20px;margin-left:6px}
+  .badge-super{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:var(--rose-soft);color:var(--rose);border:1px solid #e3b9c2;padding:2px 7px;border-radius:20px;margin-left:6px}
+  .badge-viewer{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:var(--paper-2);color:var(--ink-soft);border:1px solid var(--line-strong);padding:2px 7px;border-radius:20px;margin-left:6px}
+  .badge-contrib{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:var(--green-soft);color:var(--green);border:1px solid #bedcc6;padding:2px 7px;border-radius:20px;margin-left:6px}
+  .ws-select{border:1px solid var(--line-strong);background:#fff;border-radius:7px;padding:6px 9px;font-size:12px;font-family:var(--mono);color:var(--ink);max-width:240px}
+
+  .statsbar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:0 0 22px}
+  .stat{font-family:var(--mono);font-size:12px;color:var(--ink-soft);display:flex;align-items:center;gap:7px}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .dot.open{background:var(--gold)}.dot.disc{background:var(--teal)}.dot.solved{background:var(--green)}
+  .stat b{color:var(--ink);font-weight:600}
+  .filters{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+  .filter{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);padding:5px 11px;border-radius:20px}
+  .filter.active{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:22px;box-shadow:var(--shadow)}
+  .panel h3{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 14px}
+  .panel .col2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  @media(max-width:760px){.panel .col2{grid-template-columns:1fr;gap:22px}}
+  .userline{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .userline:last-of-type{border-bottom:none}
+  .userline .nm{flex:1}
+  .field{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+  input[type=text],input[type=password]{border:1px solid var(--line-strong);background:#fff;border-radius:8px;padding:8px 11px;font-size:14px;color:var(--ink);min-width:0;flex:1}
+  input[type=text]:focus,input[type=password]:focus,textarea:focus,select:focus{outline:2px solid var(--rose-soft);border-color:var(--rose)}
+  label.chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft);white-space:nowrap}
+
+  .land{max-width:780px;margin:6px auto 0}
+  .land h2{font-family:var(--serif);font-weight:700;font-size:24px;margin:0}
+  .land-sub{font-family:var(--mono);font-size:12px;color:var(--ink-soft);letter-spacing:.04em;margin:6px 0 0}
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+  @media(max-width:680px){.tiles{grid-template-columns:1fr}}
+  .tile{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 16px;box-shadow:var(--shadow)}
+  .tile .t-kick{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--rose)}
+  .tile .t-title{font-family:var(--serif);font-weight:700;font-size:20px;margin:4px 0 6px}
+  .tile .t-desc{font-size:13px;color:var(--ink-soft);line-height:1.5}
+  .mtg-list{margin-top:24px}
+  .mtg-list h3{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+  .mtg-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
+  .mtg-name{font-family:var(--serif);font-weight:700;font-size:16px}
+  .mtg-meta{font-family:var(--mono);font-size:11px;color:var(--ink-soft);letter-spacing:.03em;margin-top:2px}
+
+  .section{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden}
+  .sec-head{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;user-select:none}
+  .sec-num{font-family:var(--mono);font-size:12px;font-weight:600;color:#fff;background:var(--rose);width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .sec-title{font-family:var(--serif);font-weight:700;font-size:19px;flex:1;line-height:1.15}
+  .sec-meta{font-family:var(--mono);font-size:11px;color:var(--ink-soft);letter-spacing:.04em}
+  .chev{color:var(--ink-soft);font-size:13px;transition:transform .15s;font-family:var(--mono)}
+  .section.collapsed .chev{transform:rotate(-90deg)}
+  .section.collapsed .sec-body{display:none}
+  .sec-body{padding:4px 20px 18px;border-top:1px solid var(--line)}
+  .sec-tools{display:flex;gap:8px;padding:12px 0 4px;flex-wrap:wrap;align-items:center}
+
+  .q{padding:16px 0;border-bottom:1px solid var(--line)}
+  .q:last-child{border-bottom:none}
+  .q-top{display:flex;gap:12px;align-items:flex-start}
+  .q-text{font-size:15.5px;font-weight:500;flex:1;line-height:1.45}
+  .q-text .num{font-family:var(--mono);font-size:12px;color:var(--ink-soft);margin-right:8px}
+  .pill{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:20px;white-space:nowrap;border:1px solid transparent}
+  .pill.open{background:var(--gold-soft);color:var(--gold);border-color:#e7d39a}
+  .pill.disc{background:var(--teal-soft);color:var(--teal);border-color:#bcdad6}
+  .pill.solved{background:var(--green-soft);color:var(--green);border-color:#bedcc6}
+  .q-status-select{border:1px solid var(--line-strong);background:#fff;border-radius:7px;padding:5px 8px;font-size:11px;font-family:var(--mono);letter-spacing:.04em;color:var(--ink)}
+  .q-admin{display:flex;gap:6px}
+
+  .answers{margin:14px 0 0;padding:0 0 0 2px}
+  .ans{background:var(--cream);border:1px solid var(--line);border-left:3px solid var(--line-strong);border-radius:8px;padding:11px 14px;margin-bottom:9px}
+  .ans.mine{border-left-color:var(--rose)}
+  .ans.is-result{border-left-color:var(--green);background:var(--green-soft);border-color:#bedcc6}
+  .ans-head{display:flex;align-items:center;gap:10px;margin-bottom:5px;font-family:var(--mono);font-size:11px;color:var(--ink-soft);letter-spacing:.04em}
+  .ans-author{color:var(--ink);font-weight:600}
+  .you-tag{background:var(--rose);color:#fff;font-size:9px;padding:1px 6px;border-radius:10px;letter-spacing:.08em}
+  .result-tag{background:var(--green);color:#fff;font-size:9px;padding:1px 6px;border-radius:10px;letter-spacing:.08em}
+  .ans-body{font-size:14px;line-height:1.5;white-space:pre-wrap}
+  .mark-btn{margin-left:auto}
+  .no-ans{font-family:var(--mono);font-size:12px;color:var(--ink-soft);font-style:italic;padding:2px 0 0}
+
+  .result-box{background:var(--green-soft);border:1px solid #bedcc6;border-left:3px solid var(--green);border-radius:8px;padding:10px 13px;margin:12px 0 4px}
+  .result-box.editing{background:var(--paper);border-color:var(--line-strong);border-left-color:var(--line-strong)}
+  .result-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .result-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green)}
+  .result-meta{font-family:var(--mono);font-size:11px;color:var(--ink-soft);letter-spacing:.03em;flex:1}
+  .result-actions{display:flex;gap:6px}
+  .result-body{font-size:14px;line-height:1.5;white-space:pre-wrap;color:var(--ink)}
+  .result-cta{margin:11px 0 2px}
+  .result-editor-ta{width:100%;border:1px solid var(--line-strong);background:#fff;border-radius:8px;padding:9px 11px;font-size:14px;line-height:1.5;resize:vertical;min-height:64px;color:var(--ink)}
+
+  .answer-editor{margin-top:12px}
+  .answer-editor textarea{width:100%;border:1px solid var(--line-strong);background:#fff;border-radius:8px;padding:10px 12px;font-size:14px;line-height:1.5;resize:vertical;min-height:74px;color:var(--ink)}
+  .editor-row{display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}
+  .editor-hint{font-family:var(--mono);font-size:11px;color:var(--ink-soft);letter-spacing:.03em}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(36,31,26,.42);display:flex;align-items:center;justify-content:center;padding:24px;z-index:60}
+  .modal-card{background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;width:100%;max-width:720px;box-shadow:0 12px 40px rgba(36,31,26,.25);padding:18px 20px;max-height:86vh;overflow:auto}
+  .modal-card.wide{max-width:800px}
+  .modal-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+  .modal-kicker{font-family:var(--serif);font-weight:700;font-size:20px}
+  .modal-sub{font-family:var(--mono);font-size:11px;color:var(--ink-soft);letter-spacing:.04em;margin-top:2px}
+  .exp-tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+  .exp-tab{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line-strong);background:var(--paper);color:var(--ink-soft);padding:6px 13px;border-radius:8px}
+  .exp-tab.active{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+  .export-area{width:100%;height:300px;border:1px solid var(--line-strong);background:#fff;border-radius:8px;padding:11px 12px;font-family:var(--mono);font-size:12px;line-height:1.5;color:var(--ink);resize:vertical;white-space:pre;overflow:auto}
+  .modal-actions{display:flex;align-items:center;gap:10px;margin-top:11px;flex-wrap:wrap}
+  .bulk-ta{width:100%;height:210px;border:1px solid var(--line-strong);background:#fff;border-radius:8px;padding:11px 12px;font-size:14px;line-height:1.5;color:var(--ink);resize:vertical}
+  .bulk-busy{font-family:var(--mono);font-size:13px;color:var(--ink-soft);padding:30px 4px;text-align:center;line-height:1.7}
+  .bulk-list{margin:6px 0 2px;border-top:1px solid var(--line)}
+  .bulk-row{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed var(--line)}
+  .bulk-row input[type=checkbox]{margin-top:4px}
+  .bulk-q{flex:1;font-size:14px;line-height:1.45}
+  .bulk-row select{border:1px solid var(--line-strong);background:#fff;border-radius:7px;padding:5px 8px;font-size:11px;font-family:var(--mono);color:var(--ink);max-width:230px}
+
+  .login-screen{max-width:460px;margin:40px auto 0;text-align:center}
+  .login-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:34px 30px;box-shadow:var(--shadow)}
+  .login-card h2{font-family:var(--serif);font-weight:700;font-size:23px;margin:0 0 6px}
+  .login-card p{font-family:var(--mono);font-size:12px;color:var(--ink-soft);margin:0 0 22px;letter-spacing:.03em}
+  .user-buttons{display:flex;flex-direction:column;gap:9px}
+  .user-pick{border:1px solid var(--line-strong);background:#fff;border-radius:9px;padding:12px 16px;font-size:15px;font-weight:500;text-align:left;display:flex;align-items:center;justify-content:space-between;transition:border-color .12s,background .12s}
+  .user-pick:hover{border-color:var(--rose);background:var(--rose-soft)}
+  .login-note{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-top:18px;line-height:1.6}
+
+  .empty-hint{font-family:var(--mono);font-size:12px;color:var(--ink-soft);font-style:italic;padding:10px 0}
+  .addq-box{background:var(--cream);border:1px dashed var(--line-strong);border-radius:9px;padding:12px 14px;margin-top:10px;display:none}
+  .addq-box.show{display:block}
+  .addq-box textarea{width:100%;border:1px solid var(--line-strong);background:#fff;border-radius:8px;padding:9px 11px;font-size:14px;resize:vertical;min-height:56px;color:var(--ink)}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--cream);font-family:var(--mono);font-size:12px;letter-spacing:.04em;padding:11px 18px;border-radius:24px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:70}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .storage-warn{background:var(--gold-soft);border:1px solid #e7d39a;color:#7a5a14;font-family:var(--mono);font-size:12px;border-radius:8px;padding:10px 14px;margin-bottom:18px;line-height:1.5}
+
+  @media print{
+    @page{size:A4;margin:16mm 14mm}
+    body{background:#fff;font-size:11pt}
+    .wrap{max-width:none;padding:0}
+    .toolbar,.filters,.statsbar .filters,.panel,.sec-tools,.q-admin,.q-status-select,
+    .answer-editor,.btn,.chev,.addq-box,.storage-warn,.toast,
+    .modal-overlay,.result-actions,.result-cta,.result-editor-ta{display:none !important}
+    header.brand{border-color:#000}
+    .section{box-shadow:none;border-color:#ccc;break-inside:avoid;page-break-inside:avoid}
+    .section.collapsed .sec-body{display:block !important}
+    .q{break-inside:avoid;page-break-inside:avoid}
+    .ans{background:#fff;border-color:#ddd}
+    .result-box{background:#fff;border-color:#bbb}
+    .statsbar{margin-bottom:14px}
+  }
+</style>
+<div class="wrap">
+  <header class="brand">
+    <div class="brand-row">
+      <div>
+        <p class="kicker">Internal · Confidential</p>
+        <h1>CONSULTING&nbsp;KINGS</h1>
+        <p class="sub">Brainstorming &amp; Decision Log — Company Setup</p>
+      </div>
+      <div id="toolbarSlot"></div>
+    </div>
+  </header>
+  <div id="app"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================ STORAGE (shared artifact database) ============================ */
+/* One document per record in six collections. Writes only touch records that changed, so two people
+   editing different questions never overwrite each other. Live updates arrive through onSnapshot. */
+const COLLS=['users','projects','meetings','sections','questions','answers'];
+let DB=null, hasStore=false, synced=false, lastBase={};
+let memFallback=null;
+const dbCache={}; COLLS.forEach(function(c){ dbCache[c]={}; });
+let pendingRender=false;
+
+function delay(ms){ return new Promise(function(res){ setTimeout(res,ms); }); }
+async function withRetries(fn, attempts, baseDelay){
+  let lastErr;
+  for(let i=0;i<attempts;i++){
+    try{ return await fn(); }
+    catch(e){ lastErr=e; if(i<attempts-1) await delay(baseDelay*(i+1)); }
+  }
+  throw lastErr;
+}
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function stable(v){
+  if(v===null || typeof v!=='object') return JSON.stringify(v);
+  if(Array.isArray(v)) return '['+v.map(stable).join(',')+']';
+  return '{'+Object.keys(v).filter(function(k){return v[k]!==undefined;}).sort().map(function(k){ return JSON.stringify(k)+':'+stable(v[k]); }).join(',')+'}';
+}
+function canon(d){
+  const o={};
+  COLLS.forEach(function(c){ o[c]=(d[c]||[]).map(stable).sort(); });
+  return JSON.stringify(o);
+}
+async function getDb(){
+  try{ if(window.claude && typeof window.claude.use==='function') return await window.claude.use('db'); }catch(e){}
+  return null;
+}
+function remoteState(){
+  const d={};
+  COLLS.forEach(function(c){ d[c]=Object.keys(dbCache[c]).sort().map(function(id){ return clone(dbCache[c][id]); }); });
+  return d;
+}
+function startSync(){
+  return new Promise(function(resolve){
+    const definitive={}; let done=false;
+    function finish(ok){ if(done) return; done=true; synced=true; resolve(ok); }
+    setTimeout(function(){ finish(false); }, 8000);
+    COLLS.forEach(function(c){
+      DB.collection(c).onSnapshot(function(snap){
+        const rows={};
+        snap.docs.forEach(function(doc){ rows[doc.id]=clone(doc.data()); });
+        dbCache[c]=rows;
+        if(!snap.metadata.fromCache) definitive[c]=true;
+        if(!done){ if(COLLS.every(function(x){return definitive[x];})) finish(true); }
+        else onRemoteChange();
+      }, function(err){
+        console.error('snapshot error',c,err);
+        definitive[c]=true;
+        if(!done && COLLS.every(function(x){return definitive[x];})) finish(false);
+        toast('⚠ Live updates stopped ('+(err&&err.code?err.code:'error')+') — reload the page');
+      });
+    });
+  });
+}
+
+async function storeGet(){
+  if(!hasStore) return migrate(memFallback);
+  if(!synced) return null;
+  const d=remoteState();
+  if(!d.users.length && !d.projects.length){ lastBase={}; return null; }
+  lastBase={};
+  COLLS.forEach(function(c){ lastBase[c]={}; d[c].forEach(function(item){ lastBase[c][item.id]=stable(item); }); });
+  return migrate(d);
+}
+async function storeSet(data){
+  if(!hasStore){ memFallback=data; return true; }
+  const base=lastBase; const ops=[];
+  COLLS.forEach(function(c){
+    const next={};
+    (data[c]||[]).forEach(function(item){ if(item && item.id) next[item.id]=item; });
+    const bc=base[c]||{};
+    Object.keys(next).forEach(function(id){
+      const body=clone(next[id]);
+      if(bc[id]!==stable(body)) ops.push({c:c,id:id,body:body});
+    });
+    Object.keys(bc).forEach(function(id){ if(!(id in next)) ops.push({c:c,id:id,del:true}); });
+  });
+  if(!ops.length) return true;
+  let failed=0, i=0;
+  async function worker(){
+    while(i<ops.length){
+      const op=ops[i++];
+      try{
+        const ref=DB.collection(op.c).doc(op.id);
+        await withRetries(function(){ return op.del ? ref.delete() : ref.set(op.body); }, 2, 400);
+        if(!base[op.c]) base[op.c]={};
+        if(op.del){ delete dbCache[op.c][op.id]; delete base[op.c][op.id]; }
+        else { dbCache[op.c][op.id]=op.body; base[op.c][op.id]=stable(op.body); }
+      }catch(e){ failed++; console.error('write failed',op.c,op.id,e); }
+    }
+  }
+  await Promise.all([worker(),worker(),worker(),worker()]);
+  if(failed){
+    toast('⚠ Save failed for '+failed+' item(s) — your change stays visible but is NOT saved. Check that you have edit access, then try again.');
+    return false;
+  }
+  return true;
+}
+
+/* Live updates from other people. Never re-render while someone is typing or has a dialog open. */
+function onRemoteChange(){ pendingRender=true; flushRemote(); }
+function flushRemote(){
+  if(!pendingRender || !hasStore) return;
+  if(!STATE){
+    const first=remoteState();
+    if(first.users.length || first.projects.length){ pendingRender=false; STATE=migrate(first); render(); }
+    return;
+  }
+  const a=document.activeElement;
+  if(a && (a.tagName==='TEXTAREA' || a.tagName==='INPUT' || a.tagName==='SELECT')) return;
+  if(UI.exportOpen || UI.bulkOpen || UI.transcriptOpen || UI.pwModal || UI.inputModal || UI.confirmModal) return;
+  const d=remoteState();
+  if(!d.users.length && !d.projects.length){ pendingRender=false; return; }
+  const m=migrate(d);
+  pendingRender=false;
+  if(canon(m)===canon(STATE)) return;
+  STATE=m; render();
+}
+setInterval(flushRemote, 2500);
+
+/* ============================ ADMIN SESSION MEMORY (this device, 24h) ============================ */
+const SESSION_KEY='consultingkings_admin_sessions_v1';
+const SESSION_HOURS=24;
+let memSessions={};
+async function getAdminSessions(){
+  try{ const v=localStorage.getItem(SESSION_KEY); return v?JSON.parse(v):{}; }
+  catch(e){ return memSessions; }
+}
+async function setAdminSessions(obj){
+  memSessions=obj;
+  try{ localStorage.setItem(SESSION_KEY,JSON.stringify(obj)); }catch(e){}
+}
+async function isAdminSessionValid(userId){
+  const sessions=await getAdminSessions();
+  const exp=sessions[userId];
+  return !!(exp && Date.now()<exp);
+}
+async function rememberAdminSession(userId){
+  const sessions=await getAdminSessions();
+  sessions[userId]=Date.now()+SESSION_HOURS*60*60*1000;
+  await setAdminSessions(sessions);
+}
+async function forgetAdminSession(userId){
+  const sessions=await getAdminSessions();
+  if(userId in sessions){ delete sessions[userId]; await setAdminSessions(sessions); }
+}
+async function forgetAllAdminSessions(){ await setAdminSessions({}); }
+
+/* ============================ STATE ============================ */
+let STATE=null;
+const UI={
+  currentUserId:null,
+  currentProjectId:null,
+  currentMeetingId:null,
+  filter:'all',
+  collapsed:{}, adminOpen:false, addQOpen:{}, resultEditOpen:{}, usersOpen:false,
+  pwModal:null, pwModalError:null, confirmModal:null,
+  aiSuggestBusy:{}, aiSuggestError:{}, aiSuggestion:{},
+  bulkStatusMode:false, bulkSelected:{}, bulkStatusText:'',
+  solvedCollapsed:{},
+  dashboardOpen:false,
+  transcriptOpen:false, transcriptBusy:false, transcriptText:'', transcriptResult:null, transcriptError:null,
+  manageAccessModal:null, inputModal:null, infoModal:null,
+  exportOpen:false, exportFormat:'md',
+  bulkOpen:false, bulkBusy:false, bulkText:'', bulkResult:null, bulkError:null
+};
+function uid(p){ return (p||'id')+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7); }
+
+/* ============================ MIGRATION ============================ */
+function migrate(d){
+  if(!d) return d;
+  if(!Array.isArray(d.meetings)){
+    const ov=uid('mtg');
+    d.meetings=[{id:ov,name:'Overall questions',isOverall:true,createdAt:new Date().toISOString()}];
+    (d.sections||[]).forEach(function(s){ if(!s.meetingId) s.meetingId=ov; });
+    (d.questions||[]).forEach(function(q){ if(!q.meetingId) q.meetingId=ov; });
+  }
+  if(!d.meetings.some(function(m){return m.isOverall;}) && d.meetings.length){ d.meetings[0].isOverall=true; }
+  (d.questions||[]).forEach(function(q){
+    if(!('result' in q)) q.result=null;
+    if(!('resultFromAnswerId' in q)) q.resultFromAnswerId=null;
+    if(!('resultBy' in q)) q.resultBy=null;
+    if(!('resultAt' in q)) q.resultAt=null;
+  });
+  (d.users||[]).forEach(function(u){ if(!('pinHash' in u)) u.pinHash=null; if(!('isAuto' in u)) u.isAuto=false; });
+  if(!Array.isArray(d.projects)){
+    const pid=uid('prj');
+    const memberIds=(d.users||[]).filter(function(u){return !u.isAuto;}).map(function(u){return u.id;});
+    d.projects=[{id:pid,name:'Consulting Kings',createdAt:new Date().toISOString(),memberIds:memberIds}];
+    (d.meetings||[]).forEach(function(m){ if(!m.projectId) m.projectId=pid; });
+    (d.users||[]).forEach(function(u){ if(u.isAdmin) u.isSuperAdmin=true; });
+  }
+  (d.users||[]).forEach(function(u){ if(!('isSuperAdmin' in u)) u.isSuperAdmin=false; if(!('isViewer' in u)) u.isViewer=false; });
+  (d.questions||[]).forEach(function(q){ syncStatus(d,q); });
+  return d;
+}
+
+/* ============================ SEED ============================ */
+function seed(){
+  const SECTIONS=[
+    ["A. STRATEGIC DIRECTION",[
+      "What is more important in the beginning: revenue, case studies, market validation, or long-term brand building?",
+      "Do we want to grow slowly with a few premium clients or aggressively with more clients?",
+      "Should Consulting Kings be positioned as a consulting company, execution partner, agency, or hybrid?",
+      "What is the main business objective of Consulting Kings in the first 12 months?"
+    ]],
+    ["B. SERVICE PORTFOLIO",[
+      "Which service will we offer in conversion boosting?",
+      "Are the four MVP service areas final: Multichannel Marketing, Media Buying, AI Tools Integration, Conversion Boosting?",
+      "Should all four services launch at the same time?",
+      "Which service should be the main entry service?",
+      "Which service has the highest chance to close first clients quickly?",
+      "Which service is easiest to deliver with the current internal team?",
+      "Which service has the strongest commercial potential?",
+      "Which service has the highest margin potential?",
+      "Which service has the highest delivery risk?",
+      "Which service is most likely to create long-term retainers?",
+      "Which service will we offer in multichannel marketing?",
+      "Which service will we offer for AI?",
+      "Should we launch all four services at once or start with two strongest ones?",
+      "Will we offer also an all-in-one service?"
+    ]],
+    ["C. OFFER PACKAGING",[
+      "What exact packages will we offer for Multichannel Marketing?",
+      "What exact packages will we offer for Media Buying?",
+      "What exact packages will we offer for AI Tools Integration?",
+      "What exact packages will we offer for Conversion Boosting?",
+      "Should each service have an entry audit?",
+      "Should each service have a short sprint package?",
+      "Should each service have a monthly retainer option?",
+      "Should we create one combined “Growth & Efficiency Audit” across all four areas?",
+      "Should the audit be free, paid, or discounted for first clients?",
+      "What is the standard customer journey after the audit is completed?",
+      "Should every service have consulting and done-for-you options?"
+    ]],
+    ["D. PRICING AND COMMERCIAL MODEL",[
+      "What is the minimum project value we are willing to accept?",
+      "Should prices be visible on the website?",
+      "Should we use “starting from” prices?",
+      "Should we keep pricing fully hidden and quote after discovery?",
+      "Do we want performance-based bonuses or revenue-share pricing?",
+      "For which services would performance-based pricing make sense?",
+      "What payment terms should we use: upfront, monthly in advance, milestone-based, or mixed?"
+    ]],
+    ["E. TARGET MARKET AND CUSTOMERS",[
+      "Are we launching in CZ and DE at the same time, or one market first?",
+      "Which market should be priority one: Czech Republic or Germany?",
+      "Do we also target Austria and Switzerland as German-speaking markets?",
+      "What company size is ideal for us?",
+      "What minimum monthly revenue should a potential client have?",
+      "What minimum monthly marketing spend should a potential media buying client have?",
+      "What minimum traffic level should a Conversion Boosting client have?",
+      "What minimum user database size should a Multichannel Marketing client have?",
+      "Do we target B2B, B2C, or both?",
+      "Which industries should we actively approach first?"
+    ]],
+    ["F. IDEAL CUSTOMER PROFILE",[
+      "Who is the primary buyer for Multichannel Marketing?",
+      "Who is the primary buyer for Media Buying?",
+      "Who is the primary buyer for AI Tools Integration?",
+      "Who is the primary buyer for Conversion Boosting?",
+      "What problems must a company already feel before they are a good lead?",
+      "What signs show that a company is ready to buy?",
+      "What signs show that a company is not ready to buy yet?"
+    ]],
+    ["G. POSITIONING AND MESSAGING",[
+      "What is the one-sentence positioning statement for Consulting Kings?",
+      "What is the main promise on the homepage?",
+      "Should the brand sound premium and serious, or bold and aggressive?",
+      "Should the website use strong impact claims such as “up to 300% more revenue potential”?",
+      "What performance claims are we comfortable using publicly?",
+      "Should we publicly say that we are focused on online businesses?"
+    ]],
+    ["H. WEBSITE AND LEAD GENERATION",[
+      "What is the main CTA on the website: “Book a Discovery Call,” “Book an Audit Call,” or something stronger?",
+      "Should the website be launched in English first?",
+      "When do we need Czech and German website versions?",
+      "What pages are mandatory for the first launch?",
+      "Do we need individual service pages from day one?",
+      "Do we need case studies at launch?",
+      "If we do not have public case studies, how do we show credibility?",
+      "What lead generation channel starts first?"
+    ]],
+    ["I. SALES & MARKETING PROCESS",[
+      "Who will generate leads?",
+      "Who will qualify leads?",
+      "Who will run discovery calls?",
+      "Who will prepare proposals?",
+      "Who will close deals?",
+      "What CRM will we use to manage the pipeline?",
+      "What qualifies a lead as sales-ready?",
+      "What questions must be answered before sending a proposal?",
+      "What is the target number of discovery calls per month?",
+      "Who takes care of marketing?"
+    ]],
+    ["J. DELIVERY OWNERSHIP",[
+      "Who owns Multichannel Marketing delivery?",
+      "Who owns Media Buying delivery?",
+      "Who owns AI Tools Integration delivery?",
+      "Who owns Conversion Boosting delivery?",
+      "Who is the main client-facing project manager?",
+      "Who approves final deliverables before they are sent to clients?",
+      "How many clients can we handle at the same time during the pilot phase?",
+      "What internal capacity is available for Consulting Kings each month?",
+      "What happens if Consulting Kings work conflicts with current internal priorities?",
+      "Who has final decision-making authority if priorities conflict?"
+    ]],
+    ["K. OPERATIONS AND TOOLS",[
+      "What project management tool will we use internally?",
+      "What CRM will we use?",
+      "What reporting tool or format will we use for clients?",
+      "Where will we store client documents and deliverables?",
+      "What communication channels will we use with clients?",
+      "Which tools do we already know well enough to consult on?"
+    ]],
+    ["L. LEGAL AND RISK",[
+      "What legal entity will sign client contracts?",
+      "Do we need a new company or can Consulting Kings start as a brand first?",
+      "Do we need NDAs before audits?",
+      "Do we need GDPR data processing agreements?",
+      "How do we handle access to client ad accounts, email databases and analytics?",
+      "What results can we guarantee, if any?",
+      "What results must always be described as potential, not guaranteed?"
+    ]],
+    ["M. FIRST LAUNCH PLAN",[
+      "What must be finished before public website launch?",
+      "What must be finished before first sales outreach?",
+      "What must be finished before first client discovery call?",
+      "What is the target date for website launch?",
+      "What is the target date for first outreach?",
+      "What is the target date for first signed client?",
+      "What discount, if any, will pilot clients receive?"
+    ]],
+    ["N. PILOT PHASE",[
+      "What type of company is ideal for the first pilot?",
+      "Which service should we test first with a pilot client?",
+      "Should pilot clients receive a fixed-scope audit only, or full implementation?",
+      "What do we need to learn from the pilots?",
+      "How will we measure whether a pilot was successful?",
+      "Do we need a case study from each pilot?",
+      "What happens if the pilot fails?",
+      "What are the go/no-go criteria after the pilot phase?"
+    ]],
+    ["O. INTERNAL DECISION-MAKING",[
+      "Who approves pricing?",
+      "Who approves the website copy?",
+      "Who approves sales materials?",
+      "Who approves contracts?",
+      "Who approves marketing claims?",
+      "Who decides whether to accept or reject a client?",
+      "How often should the internal project team meet until launch?"
+    ]],
+    ["P. PROJECT GOVERNANCE & LAUNCH CONTROL",[
+      "What is the single master launch plan and where is it maintained?",
+      "What are the major milestones from today through first client delivery?",
+      "Which milestones are on the critical path and cannot slip without moving launch?",
+      "What is explicitly included in the MVP and what is deferred to Phase 2?",
+      "Who owns each launch workstream and who is accountable when a deadline slips?",
+      "What decisions can the PM make without founder approval?",
+      "What is the escalation path and response-time expectation for blocked decisions?",
+      "Where are project decisions, risks, blockers and changes recorded as the single source of truth?"
+    ]],
+    ["Q. FINANCIAL MODEL & UNIT ECONOMICS",[
+      "What are the revenue targets for Month 3, Month 6 and Month 12?",
+      "What recurring revenue target should Consulting Kings reach by Month 12?",
+      "What gross margin target must the business achieve overall and by service?",
+      "What internal hourly cost should be assigned to each delivery role for profitability calculations?",
+      "How many delivery hours are budgeted for each package and retainer?",
+      "Which client-specific software, contractor and media costs are passed through versus absorbed?",
+      "What is the monthly break-even revenue for Consulting Kings?",
+      "What customer acquisition cost and payback period are acceptable?",
+      "Who reviews project and client profitability, and how often?"
+    ]],
+    ["R. CAPACITY & RESOURCE PLANNING",[
+      "How many protected Consulting Kings hours per month does each named team member have?",
+      "Which Consulting Kings resources are shared with core-business responsibilities?",
+      "What utilization ceiling should trigger a pause in new client intake?",
+      "How many clients can each service owner support without reducing quality?",
+      "Which role is expected to become the first delivery bottleneck as client volume grows?",
+      "At what utilization or revenue threshold do we hire or contract additional capacity?",
+      "Which functions can safely be outsourced to contractors and which must remain internal?",
+      "What backup coverage exists when a service owner is unavailable due to leave or illness?"
+    ]],
+    ["S. CLIENT ONBOARDING",[
+      "Who takes ownership of a client immediately after the contract is signed?",
+      "What standard client intake questionnaire must be completed before kickoff?",
+      "What account, platform and data-access checklist is required for each service?",
+      "What documents must be signed or received before delivery work can begin?",
+      "How quickly after signature and payment should kickoff occur?",
+      "What happens if the client has not supplied required data or access by the agreed start date?",
+      "What should every client receive during the first week so expectations are clear?"
+    ]],
+    ["T. DELIVERY SOPS & QUALITY ASSURANCE",[
+      "What is the standard delivery workflow from kickoff through final handover for each service?",
+      "What mandatory inputs are required before each service can begin?",
+      "What standard templates must be used for audits, roadmaps, reports and recommendations?",
+      "What mandatory QA checklist must be completed before a deliverable reaches a client?",
+      "Which deliverables require a second-person or technical review before release?",
+      "What is the standard turnaround time for each audit, sprint and implementation package?",
+      "What evidence or data standard is required before making a performance recommendation?",
+      "What rollback or correction process is used if Consulting Kings introduces an implementation error?"
+    ]],
+    ["U. SCOPE & CHANGE MANAGEMENT",[
+      "How is in-scope versus out-of-scope work defined in every proposal and statement of work?",
+      "How many revisions or review rounds are included in each package?",
+      "Who can approve free additional work or scope exceptions?",
+      "How are change requests priced, approved and documented?",
+      "What changes in channels, countries, brands or platforms automatically trigger a re-scope?",
+      "Under what circumstances can work pause until scope, access or responsibilities are clarified?"
+    ]],
+    ["V. BILLING, INVOICING & COLLECTIONS",[
+      "Which invoicing and accounting system will Consulting Kings use?",
+      "Which currencies can clients be invoiced in?",
+      "Which payment methods will be accepted?",
+      "Who creates, approves and sends client invoices?",
+      "At what point is an overdue invoice escalated and delivery paused?",
+      "What cancellation, notice-period and renewal terms apply to retainers?",
+      "How are taxes, VAT and cross-border invoicing handled for CZ, DE, EU and non-EU clients?"
+    ]],
+    ["W. SECURITY & DATA GOVERNANCE",[
+      "Which password manager is mandatory for client and internal credentials?",
+      "Is multi-factor authentication mandatory for every supported platform where available?",
+      "How is client access granted, recorded, reviewed and revoked?",
+      "Can client credentials ever be shared through email, chat or project-management comments?",
+      "Where may client data be stored or downloaded, and are local-device copies permitted?",
+      "How long is client data retained after an engagement ends?",
+      "What is the incident-response process if credentials, personal data or client systems are exposed?",
+      "Who performs access reviews when an employee or contractor leaves the team?"
+    ]],
+    ["X. AI GOVERNANCE & AUTOMATION RISK",[
+      "Which AI models, automation platforms and data-processing tools are approved for client work?",
+      "What categories of client data may never be entered into public or consumer AI services?",
+      "When is an enterprise/private AI environment required instead of a public account?",
+      "Which AI-generated outputs require mandatory human review before client or customer use?",
+      "How are AI and automation workflows tested before production deployment?",
+      "Who owns monitoring and maintenance when an API, model or third-party service changes?",
+      "What support period is included after an AI automation goes live?",
+      "How are hallucination, model error, outage and unintended-action risks documented for each AI implementation?"
+    ]],
+    ["Y. CLIENT ACCOUNT MANAGEMENT & RETENTION",[
+      "Who is the named account owner for each active client?",
+      "What client-response SLA applies during normal business hours?",
+      "How often does each client receive a status update and strategic review?",
+      "How will client satisfaction be measured during pilots and retainers?",
+      "What signals identify an account as at risk of churn or dissatisfaction?",
+      "When should renewal and expansion conversations begin before a contract ends?",
+      "What events or results should trigger a cross-sell into another Consulting Kings service?"
+    ]],
+    ["Z. CLIENT OFFBOARDING & HANDOVER",[
+      "What standard offboarding checklist is followed when an engagement ends?",
+      "Who confirms that Consulting Kings access to client systems has been removed?",
+      "What files, documentation, credentials or workflow instructions are handed back to the client?",
+      "What client information must be deleted or retained after offboarding?",
+      "When and how do we request a testimonial, referral or case-study permission?",
+      "What final report or value summary does every client receive at the end of an engagement?"
+    ]],
+    ["AA. TECHNOLOGY ARCHITECTURE & ADMIN CONTINUITY",[
+      "What is the complete approved technology stack for sales, delivery, communication, billing and reporting?",
+      "Who is the primary and backup administrator for each critical system?",
+      "How are subscriptions, licenses and renewal dates centrally tracked?",
+      "What business-owned email addresses and accounts must be used instead of personal accounts?",
+      "What is the continuity plan if the person who configured a critical tool or automation leaves?",
+      "Which systems must be backed up or exportable so Consulting Kings is not locked into one vendor?"
+    ]],
+    ["AB. KNOWLEDGE MANAGEMENT & TRAINING",[
+      "Where is the authoritative Consulting Kings knowledge base maintained?",
+      "Who owns keeping SOPs, templates and checklists current?",
+      "What must be documented after every pilot or major client engagement?",
+      "How are new team members trained and certified before they work independently on clients?",
+      "How frequently are service playbooks reviewed and updated?"
+    ]],
+    ["AC. RISK & BUSINESS CONTINUITY",[
+      "What are the top ten operational and commercial risks to the first 12 months of Consulting Kings?",
+      "For each major risk, who owns mitigation and what event triggers escalation?",
+      "What is the response plan if Consulting Kings signs more work than current capacity can deliver?",
+      "What is the response plan if a key service owner becomes unavailable during a live client engagement?",
+      "What conditions would cause Consulting Kings to pause sales, pause a service, or stop the initiative entirely?"
+    ]],
+    ["AD. MANAGEMENT KPIS & OPERATING CADENCE",[
+      "Which sales KPIs must be reviewed weekly?",
+      "Which delivery and capacity KPIs must be reviewed weekly?",
+      "Which financial KPIs must be reviewed monthly?",
+      "What client-health and retention KPIs must be reviewed monthly?",
+      "What pipeline coverage level is required relative to the monthly sales target?",
+      "What thresholds trigger action on margin, utilization, overdue projects or client satisfaction?",
+      "What is the standard weekly and monthly management meeting cadence, agenda and decision output?"
+    ]]
+  ];
+  const SHEET_ANSWERS={"0-0": {"a": "Market validation and first paid proof should come first, supported by case studies. Early revenue matters as proof of willingness to pay; long-term brand building is secondary in the first phase.", "c": false}, "0-1": {"a": "Grow slowly with a few premium/pilot clients first. The earlier project plan recommended a pilot cap of 1-3 clients before scaling, to protect delivery quality and core business capacity.", "c": false}, "0-2": {"a": "Consulting Kings should be positioned as a hybrid: productized consulting plus done-for-you / Service-as-a-Product execution. The positioning should be operator-led, practical, and focused on implementation, not generic agency work.", "c": true}, "0-3": {"a": "The first 12-month objective should be to validate the four-service portfolio, launch the website and sales materials, close paid pilot clients, prove repeatable delivery, and convert at least some pilots into retainers.", "c": false}, "1-0": {"a": "Conversion Boosting will include conversion audits, funnel and user-flow analysis, analytics/tracking review, KPI definition, A/B testing roadmap, UX/trust/mobile recommendations, QA checks for conversion blockers, and a prioritized optimization roadmap.", "c": true}, "1-1": {"a": "Yes. The current MVP service areas are Multichannel Marketing, Media Buying, AI Tools Integration, and Conversion Boosting. QA Testing was replaced by the broader Conversion Boosting service.", "c": true}, "1-2": {"a": "All four services should be shown on the website from launch to present the full company capability. Active sales can still prioritize the 1-2 strongest entry offers to protect capacity.", "c": false}, "1-3": {"a": "The best main entry service is a combined Growth & Efficiency Audit, with service-specific audit paths. For revenue-focused buyers, Conversion Boosting or Multichannel Marketing are especially strong entry points.", "c": false}, "1-4": {"a": "Multichannel Marketing and Media Buying are likely to close first because they connect directly to revenue and can be sold as done-for-you execution. Conversion Boosting is also attractive as a paid audit.", "c": false}, "1-5": {"a": "Multichannel Marketing and Media Buying are easiest to deliver first because the company already has internal departments, specialists, and operating experience in these areas. AI can be delivered for focused use cases.", "c": false}, "1-6": {"a": "Multichannel Marketing and Conversion Boosting have the strongest commercial potential because they sell revenue growth from existing data and traffic. Media Buying is also commercially strong when the client has sufficient budget and tracking.", "c": false}, "1-7": {"a": "Audits and AI / Conversion consulting likely have the highest early margin because they are knowledge-led and template-driven. Retainer margins should improve later through playbooks, automation, and standardized reporting.", "c": false}, "1-8": {"a": "The highest delivery risk is Media Buying if performance depends on weak product, tracking, creative, or landing pages. Conversion Boosting also has risk if the client lacks traffic or implementation capacity; AI has scope and data-privacy risk.", "c": false}, "1-9": {"a": "Multichannel Marketing and Media Buying are the strongest long-term retainer candidates. Conversion Boosting can also become a retainer if offered as an ongoing experimentation / continuous improvement program.", "c": false}, "1-10": {"a": "Multichannel Marketing should cover email, SMS, and push revenue systems: strategy, segmentation, lifecycle automations, deliverability, campaign calendar, reporting, and done-for-you campaign management.", "c": true}, "1-11": {"a": "AI should cover AI opportunity scans, workflow implementation, automation of reporting/manual tasks, tool selection, playbooks, training, governance, and adoption support. MVP should avoid bespoke software development.", "c": true}, "1-12": {"a": "Launch all four services publicly, but start active selling with the strongest 1-2 pilot offers. This keeps the website complete while limiting delivery risk.", "c": false}, "1-13": {"a": "Yes, but only as a clearly scoped combined audit or transformation program, not as an unlimited all-in-one agency service. A combined Growth & Efficiency Audit is the safest first all-in-one offer.", "c": false}, "2-0": {"a": "Recommended packages: Revenue & Process Audit, Deliverability Recovery Sprint, Transformation Program, and monthly Email / SMS / Push Revenue Engine retainer.", "c": true}, "2-1": {"a": "Recommended packages: Launch Sprint, Growth Retainer, and Performance Partner. For app-specific acquisition, add an App Growth Audit before a launch sprint.", "c": true}, "2-2": {"a": "Recommended packages: AI Opportunity Scan, AI Workflow Implementation, and Continuous Improvement Process (CIP) for ongoing review, audits, recommendations, training, and adoption support.", "c": true}, "2-3": {"a": "Recommended packages: Conversion Boosting Audit, A/B Testing Roadmap Sprint, and Conversion Optimization Retainer / Continuous Improvement Process. Implementation support can be added if tightly scoped.", "c": true}, "2-4": {"a": "Yes. Each service should have an entry audit because it is easy to sell, low-risk for the client, and creates a clear upsell path into sprint or retainer work.", "c": true}, "2-5": {"a": "Yes. A short sprint should exist for each service after the audit. The sprint converts findings into implementation, testing, setup, or quick-win improvements.", "c": false}, "2-6": {"a": "Yes, especially for Multichannel Marketing and Media Buying. AI and Conversion Boosting can also have monthly retainers when positioned as continuous improvement / optimization programs.", "c": false}, "2-7": {"a": "Yes. A combined Growth & Efficiency Audit was already recommended as the cross-functional entry offer covering revenue, efficiency, automation, conversion, and marketing opportunities.", "c": true}, "2-8": {"a": "The audit should be paid by default. For first pilot clients it can be discounted, but ideally only in exchange for structured feedback, a testimonial, referral, or case study permission.", "c": false}, "2-9": {"a": "Standard path: discovery call -> paid audit -> prioritized roadmap -> proposal for sprint, implementation, or retainer -> monthly review / continuous optimization.", "c": true}, "2-10": {"a": "Consulting should be available for all four services. Done-for-you execution should be strongest for Multichannel Marketing and Media Buying; AI and Conversion Boosting may include implementation only within strict scope.", "c": true}, "3-0": {"a": "Recommended minimum: avoid very small projects. As a working benchmark, audits should likely start around EUR 2k-5k and retainers around EUR 3k-10k/month, depending on scope. Final pricing still needs approval.", "c": false}, "3-1": {"a": "No. The current website brief recommends no public pricing for MVP. Pricing should be discussed after discovery because scope, data, tools, and client maturity vary strongly.", "c": true}, "3-2": {"a": "Not for MVP. “Starting from” pricing can be considered later once packages and delivery economics are validated.", "c": false}, "3-3": {"a": "Yes. For MVP, pricing should stay hidden and be quoted after discovery / audit qualification.", "c": true}, "3-4": {"a": "Performance-based bonuses or revenue-share can be optional later, but should not be the default in first pilots. They only make sense where tracking, attribution, and baseline data are strong.", "c": false}, "3-5": {"a": "Performance-based pricing may make sense for Media Buying, Multichannel Marketing, and Conversion Boosting if revenue/conversion tracking is reliable. It is less suitable for AI unless time savings or operational KPIs are clearly measurable.", "c": false}, "3-6": {"a": "Recommended terms: audits paid upfront; retainers paid monthly in advance; larger implementation projects milestone-based. Performance bonuses only when measurement and attribution are agreed in writing.", "c": false}, "4-0": {"a": "Current launch focus is CZ and DE. Website/content may start in English, but market focus should remain Czech and German markets.", "c": true}, "4-1": {"a": "Not finally decided. Recommended practical path: start with CZ first for easier network access and faster pilots, then use proof/case studies to approach DE as the larger commercial market.", "c": false}, "4-2": {"a": "Austria and Switzerland can be considered later as German-speaking expansion markets, but they are not part of the immediate MVP focus unless a strong opportunity appears.", "c": false}, "4-3": {"a": "Ideal companies already have an online product, traffic, customer/user data, and an internal team. Earlier ICP work fits companies roughly from 10-300 employees, depending on service and maturity.", "c": false}, "4-5": {"a": "For Media Buying, the best-fit client should usually have at least EUR 10k/month ad spend or clear willingness to reach that level. Below EUR 5k/month is often too limited for meaningful testing and agency economics.", "c": false}, "4-6": {"a": "No exact minimum was finalized. A Conversion Boosting audit can work with lower traffic, but true A/B testing requires enough traffic/conversions for reliable results. If traffic is low, focus on audit, analytics, UX, and heuristic improvements first.", "c": false}, "4-7": {"a": "No exact database size was finalized. Best-fit Multichannel clients should already have an owned user/customer database and consent. For revenue-focused DFY, a larger active list is needed; smaller lists can still use setup/automation consulting.", "c": false}, "4-8": {"a": "Both B2B and B2C can be targeted, but the strongest fit is online businesses with measurable digital funnels, traffic, user data, marketing activity, or internal processes that can be improved.", "c": true}, "4-9": {"a": "Priority industries: e-commerce, subscription/membership businesses, online marketplaces, lead-generation companies, online platforms, digital product companies, and app-based businesses.", "c": true}, "5-0": {"a": "Primary buyers: Head of Growth, CRM Manager, CMO, Marketing Manager, or Founder/CEO in smaller companies.", "c": true}, "5-1": {"a": "Primary buyers: CMO, Head of Performance, Performance Marketing Lead, Head of Growth, or Founder/CEO in smaller companies.", "c": true}, "5-2": {"a": "Primary buyers: COO, Head of Operations, CTO, Head of CX, Head of RevOps, or a founder responsible for operations.", "c": true}, "5-3": {"a": "Primary buyers: Founder/CEO, CMO, Head of Growth, Product Manager, E-commerce Manager, or digital business owner responsible for conversion/revenue.", "c": true}, "5-4": {"a": "Good leads should feel at least one of these problems: underused customer/user data, unstable paid acquisition, low conversion from existing traffic, manual/repetitive work, weak analytics, or unclear reporting.", "c": true}, "5-5": {"a": "Ready-to-buy signs: clear pain, available budget, decision maker involved, access to tools/data possible, measurable KPI, urgency this quarter, and internal owner who can implement or approve changes.", "c": true}, "5-6": {"a": "Not-ready signs: no budget, no traffic/data, no decision maker, no internal owner, unwillingness to provide access, unrealistic guarantee expectations, or inability to implement recommendations.", "c": false}, "6-0": {"a": "Consulting Kings helps online businesses turn existing traffic, data, tools, and teams into measurable growth through multichannel marketing, media buying, AI workflows, and conversion boosting.", "c": true}, "6-1": {"a": "Main homepage promise: turn hidden business potential into measurable growth by improving revenue, performance, automation, and conversion from existing assets.", "c": true}, "6-2": {"a": "The brand should feel premium and serious, but with bold commercial impact. It should not feel like a generic creative agency or overly cautious traditional consultancy.", "c": true}, "6-3": {"a": "Yes. Christian specifically requested strong impact claims and a hero slider with bold numbers. The wording should use “up to”, “potential”, or similar safeguards, not guaranteed results.", "c": true}, "6-4": {"a": "Draft public claims discussed: up to 300% more revenue potential from existing user data; up to 40% lower acquisition costs; up to 30% operational time saved; up to 80% more conversions from existing traffic. These should be framed as potential, not guarantees.", "c": true}, "6-5": {"a": "Yes. The company should publicly focus on online businesses, digital products, platforms, e-commerce, marketplaces, subscription businesses, lead generation, and app-based businesses.", "c": true}, "7-0": {"a": "Primary CTA should be “Book a Discovery Call”. For audit-focused sections, “Book an Audit Call” or “Start with a Growth & Efficiency Audit” can be used as secondary/conversion CTAs.", "c": true}, "7-1": {"a": "Yes. The website copy and structure were prepared in English first, with future CZ and DE versions planned.", "c": true}, "7-2": {"a": "CZ and DE versions should be prepared before serious local outbound in those markets. Exact timing is not fixed; recommended after English MVP/click dummy approval and before first structured CZ/DE campaigns.", "c": false}, "7-3": {"a": "Mandatory launch pages: Homepage, Services Overview, Multichannel Marketing, Media Buying, AI Tools Integration, Conversion Boosting, About Us, Contact / Book a Call, and ideally FAQ.", "c": true}, "7-4": {"a": "Yes. Each of the four services should have its own page from day one so the offer is clear and SEO/localization can be built later.", "c": true}, "7-5": {"a": "No public case studies are required for MVP launch. The site can launch with operator experience, proof points, anonymous use cases, and strong service descriptions.", "c": true}, "7-6": {"a": "Use credibility from operator experience, anonymized internal experience, team expertise, proof points, clear process, service-specific KPIs, and the product impact slider with potential gains.", "c": true}, "7-7": {"a": "First lead generation should start with personal network, targeted LinkedIn outreach, direct email outreach, partner referrals, and website inbound. Paid ads can be tested later once positioning is validated.", "c": false}, "8-0": {"a": "Lead generation should be owned commercially by Edson Vidales and Kamil/CRO, with Marketing TBD supporting campaigns and assets.", "c": false}, "8-1": {"a": "Lead qualification should be owned by Kamil/CRO and Edson/Sales. Service experts should join only when technical validation is needed.", "c": false}, "8-2": {"a": "Discovery calls should be led by Kamil/CRO and/or Edson/Sales. Service leads can join second calls for deep technical/service questions.", "c": false}, "8-3": {"a": "Proposals should be prepared by Kamil/PM/CRO with input from the relevant service owner and commercial support from Edson.", "c": false}, "8-4": {"a": "Deals should be closed by Edson/Sales and Kamil/CRO, with Christian involved for strategic or high-value clients.", "c": false}, "8-6": {"a": "A sales-ready lead has a clear pain, service fit, budget or budget potential, decision-maker involvement, timeline, access/data readiness, and willingness to discuss a paid audit or pilot.", "c": true}, "8-7": {"a": "Before proposal: business model, target market, current tools, current performance, data/access availability, main KPIs, pain/urgency, budget range, decision process, implementation owner, and preferred service scope.", "c": true}, "8-8": {"a": "Earlier validation targets suggested 20-30 discovery calls during the validation phase. A practical monthly target for the first stage should be at least 10-15 discovery calls until positioning is validated.", "c": false}, "8-9": {"a": "Marketing ownership is not fully assigned. The stakeholder list has Marketing as TBD / N/A under CRO. This is a key missing role.", "c": true}, "9-0": {"a": "Kamil Simandl should own Multichannel Marketing commercially and strategically; Jan Beranek supports as Email Marketing & AI Automations expert.", "c": true}, "9-1": {"a": "Vaclav Polivka owns Media Buying delivery, with Kamil/CRO providing commercial oversight.", "c": true}, "9-2": {"a": "Tomas Novak owns AI Integration expertise; Jan Beranek supports AI automations; Lukas/CTO provides technical/legal oversight where needed.", "c": true}, "9-4": {"a": "Kamil Simandl should be the main client-facing PM for the first phase, as CRO and PM decision-maker in the project setup.", "c": true}, "9-5": {"a": "Final deliverables should be approved by the service owner for technical quality and by Kamil/PM for client-readiness. Christian should approve strategic deliverables when relevant.", "c": false}, "9-6": {"a": "The pilot phase should be capped at 1-3 clients before scaling, as already defined in the operating/governance planning.", "c": true}, "9-8": {"a": "Core business priorities must be protected. Use stop rules, protected time allocation, and a pilot cap; if conflict appears, Consulting Kings scope or intake should pause.", "c": true}, "9-9": {"a": "Christian Bayer has final decision-making authority as Owner/Founder. Kamil/CRO and Lukas/CTO are decision makers in their areas.", "c": true}, "10-0": {"a": "ClickUp is the known project/task management tool in the current company context and should be the default internal PM tool unless the team decides otherwise.", "c": true}, "10-2": {"a": "Use weekly status reports and monthly value review reports. Format should include progress, KPIs, risks, next actions, decisions needed, and impact summary.", "c": false}, "10-4": {"a": "Use email plus scheduled calls as default. Slack/Teams shared channels can be added for retainer clients if agreed. The exact communication stack is not finalized.", "c": false}, "10-5": {"a": "The team has strong practical knowledge in email marketing systems, push/SMS concepts, media buying, tracking/affiliate tools, ClickUp/project tools, AI tools, and automation workflows. The final public list of supported tools still needs to be defined.", "c": false}, "11-2": {"a": "Yes. NDAs are recommended before audits if the client shares sensitive business, marketing, financial, user, or platform data.", "c": false}, "11-3": {"a": "Yes. GDPR data processing agreements are needed whenever Consulting Kings processes personal data, accesses user databases, marketing platforms, analytics, or customer data on behalf of the client.", "c": false}, "11-4": {"a": "Access should be via client-owned accounts with least-privilege permissions, documented access list, secure password manager, and clear offboarding after cooperation ends. Avoid shared personal credentials.", "c": false}, "11-5": {"a": "We should not guarantee business results. We can guarantee scope, deliverables, process, reporting cadence, and quality of execution; revenue/conversion/CAC improvements depend on client product, data, market, and implementation.", "c": true}, "11-6": {"a": "All revenue lift, conversion improvement, acquisition-cost reduction, ad performance, AI time savings, and similar impact numbers must be described as potential, “up to”, or dependent on conditions, not guaranteed.", "c": true}, "12-0": {"a": "Before public launch: final website copy/design, four service pages, About/FAQ/contact, approved performance claims, lead form/booking, privacy/cookie/GDPR basics, analytics tracking, and final review by Christian/Kamil.", "c": true}, "12-1": {"a": "Before first outreach: offer sheets, short sales deck, discovery script, proposal template, target lead list, qualification criteria, approved claims, and at least a functioning website or click dummy.", "c": false}, "12-2": {"a": "Before first discovery call: discovery-question template, service overview, calendar booking, clear qualification criteria, and availability of the relevant service owner for follow-up.", "c": false}, "12-6": {"a": "Pilot discount is not finalized. Recommended: offer a limited discount only for strategic pilot clients and only in exchange for feedback, testimonial, referral, or permission to create an anonymized case study.", "c": false}, "13-0": {"a": "Ideal pilot: an online company in CZ/DE with existing traffic, user/customer data, active marketing or operational bottlenecks, clear decision maker, and willingness to share data and implement recommendations.", "c": true}, "13-1": {"a": "First pilot should ideally test Multichannel Marketing or Conversion Boosting because both can show clear improvement opportunities quickly. Media Buying is good if the client already has sufficient budget and tracking.", "c": false}, "13-2": {"a": "Pilot clients should start with a fixed-scope audit or sprint. Full implementation should follow only after the audit/roadmap unless scope and access are already very clear.", "c": false}, "13-3": {"a": "Pilots should validate demand, pricing, sales messaging, delivery effort, required inputs, reporting quality, client willingness to implement, upsell potential, and impact on internal capacity.", "c": true}, "13-4": {"a": "Pilot success should be measured by paid client acceptance, clear deliverables, client satisfaction, measurable or well-supported improvement opportunities, retainer/next-step potential, and no unacceptable capacity impact.", "c": true}, "13-5": {"a": "Ideally yes, but only if the client allows it. If public permission is not possible, create an internal anonymized case study/learning report.", "c": false}, "13-6": {"a": "If the pilot fails, run a structured retrospective, identify whether the issue was offer, pricing, lead fit, delivery capacity, or execution, then adjust before accepting more clients.", "c": false}, "13-7": {"a": "Go/no-go criteria: paying clients, repeatable delivery, measurable proof or strong case-study material, acceptable capacity impact, clear staffing plan, and positive unit economics.", "c": true}, "14-0": {"a": "Pricing should be approved by Christian and Kamil, with Finance input from Lucie Havlikova where needed.", "c": true}, "14-1": {"a": "Website copy should be approved by Christian and Kamil. Kamil/PM owns preparation and coordination with website team.", "c": true}, "14-2": {"a": "Sales materials should be approved by Christian and Kamil, with Edson/Sales and the relevant service owners reviewing commercial and technical accuracy.", "c": false}, "14-3": {"a": "Contracts should be approved by Lukas/CTO/legal and Christian as final business authority.", "c": true}, "14-4": {"a": "Marketing claims should be approved by Christian and Kamil; Lukas/legal should review any strong performance or risk-sensitive claims.", "c": true}, "14-5": {"a": "Client acceptance should be decided by Kamil/CRO for fit and capacity, with Christian involved for strategic/high-value clients and service owner approval for delivery feasibility.", "c": false}, "14-6": {"a": "The internal project team should meet weekly until launch. Website, sales, and service-package workstreams may need shorter tactical check-ins when deadlines are close.", "c": false}};
+  const pid=uid('prj');
+  const ov=uid('mtg');
+  const meetings=[{id:ov,projectId:pid,name:'Overall questions',isOverall:true,createdAt:new Date().toISOString()}];
+  const sections=[]; const questions=[];
+  SECTIONS.forEach(function(s,si){
+    const sid=uid('sec');
+    sections.push({id:sid,meetingId:ov,title:s[0],order:si});
+    s[1].forEach(function(qt,qi){ questions.push({id:uid('q'),meetingId:ov,sectionId:sid,text:qt,status:'open',order:qi,result:null,resultFromAnswerId:null,resultBy:null,resultAt:null}); });
+  });
+  const adminUser={id:uid('usr'),name:'Christian',isAdmin:true,isSuperAdmin:true,pinHash:null};
+  const kamil={id:uid('usr'),name:'Kamil',isAdmin:false,isSuperAdmin:false,pinHash:null,isAuto:false};
+  const answers=[];
+  const now=new Date().toISOString();
+  sections.forEach(function(sec,si){
+    questions.filter(function(q){return q.sectionId===sec.id;}).forEach(function(q,qi){
+      const sa=SHEET_ANSWERS[si+'-'+qi];
+      if(!sa) return;
+      const aid=uid('ans');
+      answers.push({id:aid,questionId:q.id,userId:kamil.id,text:sa.a,updatedAt:now});
+      if(sa.c){ q.result=sa.a; q.resultFromAnswerId=aid; q.resultBy=kamil.id; q.resultAt=now; q.status='solved'; }
+      else { q.status='disc'; }
+    });
+  });
+  const projects=[{id:pid,name:'Consulting Kings',createdAt:now,memberIds:[adminUser.id,kamil.id]}];
+  return { users:[adminUser,kamil], projects:projects, meetings:meetings, sections:sections, questions:questions, answers:answers };
+}
+
+/* ============================ MUTATE ============================ */
+async function mutate(fn){
+  const fresh=await storeGet();
+  let data = fresh ? fresh : (STATE ? JSON.parse(JSON.stringify(STATE)) : null);
+  if(!data) data=seed();
+  fn(data);
+  const ok=await storeSet(data);
+  STATE=data;
+  render();
+  return ok;
+}
+
+/* ============================ HELPERS ============================ */
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];}); }
+function normalizeQ(t){
+  return String(t||'')
+    .toLowerCase()
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^\w\s]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+function findDuplicateInMeeting(mid, text, excludeId){
+  const norm=normalizeQ(text);
+  if(!norm) return null;
+  return STATE.questions.find(function(q){ return q.meetingId===mid && q.id!==excludeId && normalizeQ(q.text)===norm; }) || null;
+}
+function duplicateNotice(dup){
+  const sec=STATE.sections.find(function(s){ return s.id===dup.sectionId; });
+  return 'Already exists'+(sec?(' in "'+sec.title+'"'):'')+':\n\n"'+dup.text+'"\n\nStatus: '+(STATUS_LABEL[dup.status]||dup.status);
+}
+function fallbackHash(str){
+  str=String(str);
+  let h1=0x811c9dc5>>>0, h2=0x1000193>>>0;
+  for(let i=0;i<str.length;i++){
+    const c=str.charCodeAt(i);
+    h1=(h1^c)>>>0; h1=Math.imul(h1,16777619)>>>0;
+    h2=((h2+c)*31+i)>>>0; h2=Math.imul(h2,2246822519)>>>0;
+  }
+  return 'fb'+h1.toString(16).padStart(8,'0')+h2.toString(16).padStart(8,'0')+String(str.length);
+}
+async function sha256Hex(str){
+  try{
+    if(typeof crypto!=='undefined' && crypto.subtle && typeof crypto.subtle.digest==='function'){
+      const enc=new TextEncoder().encode(String(str));
+      const buf=await crypto.subtle.digest('SHA-256', enc);
+      return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    }
+  }catch(e){ /* fall through to fallback below */ }
+  return fallbackHash(str);
+}
+function currentUser(){ return STATE.users.find(function(u){return u.id===UI.currentUserId;})||null; }
+function sortedUsers(list){
+  return list.slice().sort(function(a,b){
+    function rank(u){ return u.isSuperAdmin?0:(u.isAdmin?1:2); }
+    const ai=rank(a), bi=rank(b);
+    if(ai!==bi) return ai-bi;
+    return String(a.name||'').localeCompare(String(b.name||''), undefined, {sensitivity:'base'});
+  });
+}
+function canWrite(){ const u=currentUser(); return !!(u && (u.isAdmin || u.isSuperAdmin || !u.isViewer)); }
+const VIEWER_BLOCKED=['save-answer','add-question','toggle-addq','add-section-main','open-bulk','bulk-run-ai','bulk-add-plain','bulk-confirm','create-meeting'];
+function roleBadgeHTML(u){
+  if(u.isSuperAdmin) return '<span class="badge-super">super admin</span>';
+  if(u.isAdmin) return '<span class="badge-admin">admin</span>';
+  if(u.isViewer) return '<span class="badge-viewer">viewer</span>';
+  return '<span class="badge-contrib">contributor</span>';
+}
+function isAdmin(){ const u=currentUser(); return !!(u&&(u.isAdmin||u.isSuperAdmin)); }
+function isSuperAdmin(){ const u=currentUser(); return !!(u&&u.isSuperAdmin); }
+function currentProject(){ return (STATE.projects||[]).find(function(p){return p.id===UI.currentProjectId;})||null; }
+function currentProjectName(){ const p=currentProject(); return p?p.name:''; }
+function projectMeetings(pid){ return (STATE.meetings||[]).filter(function(m){return m.projectId===pid;}); }
+function currentMeeting(){ return STATE.meetings.find(function(m){return m.id===UI.currentMeetingId;})||null; }
+function currentMeetingName(){ const m=currentMeeting(); return m?(m.isOverall?'Overall questions':m.name):'Overall questions'; }
+function meetingSections(mid){ return STATE.sections.filter(function(s){return s.meetingId===mid;}).sort(function(a,b){return a.order-b.order;}); }
+function meetingQuestions(mid){ return STATE.questions.filter(function(q){return q.meetingId===mid;}); }
+function meetingStats(mid){ const qs=meetingQuestions(mid); return {total:qs.length,open:qs.filter(function(q){return q.status==='open';}).length,disc:qs.filter(function(q){return q.status==='disc';}).length,solved:qs.filter(function(q){return q.status==='solved';}).length}; }
+function hasResult(q){ return !!(q&&q.result&&String(q.result).trim()); }
+function syncStatus(d, q){
+  if(!q) return;
+  if(q.result && String(q.result).trim()){ q.status='solved'; return; }
+  const hasAns=(d.answers||[]).some(function(a){return a.questionId===q.id;});
+  q.status = hasAns ? 'disc' : 'open';
+}
+function fmtTime(iso){ try{ const d=new Date(iso); return d.toLocaleDateString(undefined,{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } }
+function fmtDate(iso){ try{ return new Date(iso).toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'}); }catch(e){ return ''; } }
+function slug(s){ return (String(s||'log').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40))||'log'; }
+const STATUS_LABEL={open:'OPEN',disc:'IN DISCUSSION',solved:'SOLVED'};
+const STATUS_CLASS={open:'open',disc:'disc',solved:'solved'};
+const STATUS_EXPORT={open:'Open',disc:'In Discussion',solved:'Solved'};
+
+let toastTimer=null;
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.classList.remove('show');},1900); }
+
+/* ============================ RENDER ============================ */
+function renderCore(){
+  renderToolbar();
+  const app=document.getElementById('app');
+  if(!UI.currentUserId || !currentUser()){
+    let html=loginHTML();
+    if(UI.pwModal) html+=passwordModalHTML();
+    if(UI.confirmModal) html+=confirmModalHTML();
+    app.innerHTML=html;
+    focusPwInput();
+    return;
+  }
+  if(UI.currentProjectId){
+    const proj=currentProject();
+    const me=currentUser();
+    const allowed=proj && (isSuperAdmin() || (proj.memberIds||[]).indexOf(me.id)!==-1);
+    if(!allowed){ UI.currentProjectId=null; UI.currentMeetingId=null; }
+  }
+  if(UI.usersOpen && !isAdmin()) UI.usersOpen=false;
+  if(UI.usersOpen){
+    let html=usersAccessHTML();
+    if(UI.pwModal) html+=passwordModalHTML();
+    if(UI.confirmModal) html+=confirmModalHTML();
+    app.innerHTML=html;
+    focusPwInput();
+    return;
+  }
+  if(!UI.currentProjectId) UI.dashboardOpen=false;
+  if(UI.dashboardOpen){
+    let html=dashboardHTML();
+    if(UI.confirmModal) html+=confirmModalHTML();
+    app.innerHTML=html;
+    return;
+  }
+  const warn = !hasStore ? '<div class="storage-warn">Shared storage is not available in this view, so entries are kept only in memory and are lost on refresh (and not shared). Open this tool inside the Claude app/website for shared, persistent storage.</div>' : '';
+  if(!UI.currentProjectId || !currentProject()){
+    let html=warn+projectsHTML();
+    if(UI.confirmModal) html+=confirmModalHTML();
+    if(UI.manageAccessModal) html+=manageAccessModalHTML();
+    app.innerHTML=html;
+    return;
+  }
+  if(!UI.currentMeetingId || !currentMeeting()){
+    let html=warn+landingHTML();
+    if(UI.pwModal) html+=passwordModalHTML();
+    if(UI.confirmModal) html+=confirmModalHTML();
+    app.innerHTML=html;
+    focusPwInput();
+    return;
+  }
+
+  let html=warn;
+  html+=statsHTML();
+  if(isAdmin()&&UI.adminOpen) html+=adminHTML();
+  if(isAdmin()&&UI.bulkStatusMode) html+=bulkStatusPanelHTML();
+  const secs=meetingSections(UI.currentMeetingId);
+  html+= secs.length ? secs.map(sectionHTML).join('') : emptyMeetingHTML();
+  html+=addSectionHTML();
+  if(UI.exportOpen) html+=exportModalHTML();
+  if(UI.bulkOpen) html+=bulkModalHTML();
+  if(UI.transcriptOpen) html+=transcriptModalHTML();
+  if(UI.pwModal) html+=passwordModalHTML();
+    if(UI.confirmModal) html+=confirmModalHTML();
+  app.innerHTML=html;
+  focusPwInput();
+}
+function render(){
+  renderCore();
+  let extra='';
+  if(UI.inputModal) extra+=inputModalHTML();
+  if(UI.infoModal) extra+=infoModalHTML();
+  if(extra){
+    const app=document.getElementById('app');
+    app.insertAdjacentHTML('beforeend',extra);
+    const f=document.getElementById('inputModalField');
+    if(f && UI.inputModal){ f.focus(); try{ f.setSelectionRange(f.value.length,f.value.length); }catch(e){} }
+  }
+}
+function inputModalHTML(){
+  const st=UI.inputModal; if(!st) return '';
+  return '<div class="modal-overlay">'+
+    '<div class="modal-card" style="max-width:520px">'+
+      '<div class="modal-top"><div class="modal-kicker" style="font-size:17px">'+esc(st.title)+'</div><button class="btn ghost tiny" data-action="input-cancel">✕</button></div>'+
+      '<textarea id="inputModalField" class="result-editor-ta" style="min-height:'+(st.multiline?'96px':'46px')+'">'+esc(st.value||'')+'</textarea>'+
+      '<div class="modal-actions">'+
+        '<button class="btn primary tiny" data-action="input-submit">Save</button>'+
+        '<button class="btn tiny" data-action="input-cancel">Cancel</button>'+
+        '<span class="editor-hint">Enter saves · Shift+Enter adds a line</span>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+function infoModalHTML(){
+  const st=UI.infoModal; if(!st) return '';
+  return '<div class="modal-overlay">'+
+    '<div class="modal-card" style="max-width:520px">'+
+      '<div class="modal-top"><div class="modal-kicker" style="font-size:17px">'+esc(st.title||'Notice')+'</div><button class="btn ghost tiny" data-action="info-close">✕</button></div>'+
+      '<p style="font-size:14px;line-height:1.5;white-space:pre-wrap">'+esc(st.message)+'</p>'+
+      '<div class="modal-actions"><button class="btn primary tiny" data-action="info-close">OK</button></div>'+
+    '</div>'+
+  '</div>';
+}
+function focusPwInput(){
+  setTimeout(function(){
+    const el=document.getElementById('pwInput1')||document.getElementById('pwCurrent')||document.getElementById('pwNew');
+    if(el) el.focus();
+  },0);
+}
+
+function renderToolbar(){
+  const slot=document.getElementById('toolbarSlot');
+  if(!STATE){ slot.innerHTML=''; return; }
+  const u=currentUser();
+  if(!u){ slot.innerHTML=''; return; }
+  const inProject=!!(UI.currentProjectId&&currentProject());
+  const inWs=!!(inProject&&UI.currentMeetingId&&currentMeeting());
+  let ws='';
+  if(inWs){
+    const opts=projectMeetings(UI.currentProjectId).slice().sort(function(a,b){return ((b.isOverall?1:0)-(a.isOverall?1:0))||(new Date(b.createdAt)-new Date(a.createdAt));})
+      .map(function(m){return '<option value="'+m.id+'" '+(m.id===UI.currentMeetingId?'selected':'')+'>'+(m.isOverall?'Overall questions':esc(m.name))+'</option>';}).join('');
+    ws='<select class="ws-select" data-action="switch-workspace">'+opts+'</select>'+
+       '<button class="btn ghost tiny" data-action="goto-menu">Menu</button>';
+  }
+  const roleBadge = roleBadgeHTML(u);
+  const projBadge = inProject ? '<span class="badge-admin" style="background:var(--teal-soft);color:var(--teal);border-color:#bcdad6">📁 '+esc(currentProjectName())+'</span>' : '';
+  slot.innerHTML=
+    '<div class="toolbar" style="margin:0">'+
+      '<span class="who">Signed in: <b>'+esc(u.name)+'</b>'+roleBadge+projBadge+'</span>'+
+      '<button class="btn ghost tiny" data-action="refresh">↻ Refresh</button>'+
+      '<button class="btn tiny" data-action="goto-projects">📁 Projects</button>'+
+      (u.isAdmin?'<button class="btn tiny '+(UI.usersOpen?'primary':'')+'" data-action="toggle-users">👤 Users & Access</button>':'')+
+      (inProject?'<button class="btn tiny '+(UI.dashboardOpen?'primary':'')+'" data-action="toggle-dashboard">📊 Dashboard</button>':'')+
+      ws+
+      (inWs&&u.isAdmin?'<button class="btn tiny '+(UI.adminOpen?'primary':'')+'" data-action="toggle-admin">Admin</button>':'')+
+      (inWs&&u.isAdmin?'<button class="btn tiny '+(UI.bulkStatusMode?'primary':'')+'" data-action="toggle-bulk-mode">☑ Bulk status</button>':'')+
+      (inWs&&canWrite()?'<button class="btn ghost tiny" data-action="open-bulk">+ Bulk add</button>':'')+
+      (inWs&&u.isAdmin?'<button class="btn ghost tiny" data-action="open-transcript">🎙️ Transcript</button>':'')+
+      (inWs?'<button class="btn ghost tiny" data-action="open-export">Export</button>':'')+
+      '<button class="btn tiny" data-action="logout">Log out</button>'+
+    '</div>';
+}
+
+function projectsHTML(){
+  const me=currentUser();
+  const isSuper=isSuperAdmin();
+  const all=STATE.projects||[];
+  const visible = isSuper ? all.slice() : all.filter(function(p){ return (p.memberIds||[]).indexOf(me.id)!==-1; });
+  const sorted = visible.slice().sort(function(a,b){ return new Date(b.createdAt)-new Date(a.createdAt); });
+  const rows = sorted.length ? sorted.map(function(p){
+    const mCount=projectMeetings(p.id).length;
+    return '<div class="mtg-row">'+
+        '<div style="flex:1">'+
+          '<div class="mtg-name">'+esc(p.name)+'</div>'+
+          '<div class="mtg-meta">'+fmtDate(p.createdAt)+' · '+mCount+' workspace(s)'+(isSuper?(' · '+(p.memberIds||[]).length+' member(s)'):'')+'</div>'+
+        '</div>'+
+        '<button class="btn tiny" data-action="open-project" data-id="'+p.id+'">Open</button>'+
+        (isSuper?'<button class="btn tiny ghost" data-action="open-manage-access" data-id="'+p.id+'">Manage access</button>':'')+
+        (isSuper?'<button class="btn tiny danger" data-action="del-project" data-id="'+p.id+'">Delete</button>':'')+
+      '</div>';
+  }).join('') : ('<p class="empty-hint">'+(isSuper?'No projects yet. Create one above.':'You don\'t have access to any project yet. Ask a super admin to add you.')+'</p>');
+
+  return '<div class="land">'+
+    '<h2>Welcome, '+esc(me.name)+'</h2>'+
+    '<p class="land-sub">'+(isSuper?'Choose a project, or create a new one':'Choose a project')+'</p>'+
+    (isSuper?(
+      '<div class="panel" style="margin-top:18px">'+
+        '<h3>Create a new project</h3>'+
+        '<div class="field">'+
+          '<input type="text" id="newProjectName" placeholder="Project name, e.g. Consulting Kings Pilot Phase">'+
+          '<button class="btn primary tiny" data-action="create-project">Create</button>'+
+        '</div>'+
+      '</div>'
+    ):'')+
+    '<div class="mtg-list">'+
+      '<h3>'+(isSuper?'All projects':'Your projects')+'</h3>'+
+      rows+
+    '</div>'+
+  '</div>';
+}
+
+function manageAccessModalHTML(){
+  const st=UI.manageAccessModal; if(!st) return '';
+  const p=(STATE.projects||[]).find(function(x){return x.id===st.projectId;});
+  if(!p) return '';
+  const rows=sortedUsers(STATE.users.filter(function(u){return !u.isAuto && !u.isSuperAdmin;})).map(function(u){
+    const checked=(p.memberIds||[]).indexOf(u.id)!==-1;
+    return '<div class="userline">'+
+      '<label class="chk" style="flex:1;font-size:14px"><input type="checkbox" data-action="toggle-project-member" data-id="'+p.id+'" data-uid="'+u.id+'" '+(checked?'checked':'')+'> '+esc(u.name)+(u.isAdmin?'<span class="badge-admin">admin</span>':'')+'</label>'+
+    '</div>';
+  }).join('');
+  const superNames=STATE.users.filter(function(u){return u.isSuperAdmin;}).map(function(u){return esc(u.name);}).join(', ');
+  return '<div class="modal-overlay">'+
+    '<div class="modal-card">'+
+      '<div class="modal-top"><div class="modal-kicker" style="font-size:18px">Manage access — '+esc(p.name)+'</div><button class="btn ghost tiny" data-action="close-manage-access">✕ Close</button></div>'+
+      '<p class="editor-hint" style="margin:0 0 10px">Super admins ('+(superNames||'none')+') always have access to every project and are not listed here. Tick who else can open this project.</p>'+
+      (rows||'<p class="empty-hint">No other users yet — add them in Users &amp; Access.</p>')+
+    '</div>'+
+  '</div>';
+}
+
+function landingHTML(){
+  const u=currentUser();
+  const pMeetings=projectMeetings(UI.currentProjectId);
+  const overall=pMeetings.find(function(m){return m.isOverall;});
+  const ov=overall?meetingStats(overall.id):{total:0,open:0,solved:0};
+  const meetings=pMeetings.filter(function(m){return !m.isOverall;}).sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});
+  const mlist = meetings.length ? meetings.map(function(m){
+    const st=meetingStats(m.id);
+    return '<div class="mtg-row">'+
+        '<div style="flex:1">'+
+          '<div class="mtg-name">'+esc(m.name)+'</div>'+
+          '<div class="mtg-meta">'+fmtDate(m.createdAt)+' · '+st.total+' question(s) · '+st.open+' open · '+st.solved+' solved</div>'+
+        '</div>'+
+        '<button class="btn tiny" data-action="open-meeting" data-id="'+m.id+'">Open</button>'+
+        (isAdmin()?'<button class="btn tiny danger" data-action="del-meeting" data-id="'+m.id+'">Delete</button>':'')+
+      '</div>';
+  }).join('') : '<p class="empty-hint">No meetings yet. Create one above.</p>';
+  return '<div class="land">'+
+    '<div class="field" style="margin-bottom:6px"><button class="btn ghost tiny" data-action="goto-projects">← Projects</button></div>'+
+    '<h2>'+esc(currentProjectName())+'</h2>'+
+    '<p class="land-sub">Choose a workspace to continue</p>'+
+    '<div class="tiles">'+
+      '<div class="tile">'+
+        '<div class="t-kick">Master list</div>'+
+        '<div class="t-title">Overall questions</div>'+
+        '<div class="t-desc">The full decision log across all topics — '+ov.total+' questions, '+ov.open+' open, '+ov.solved+' solved.</div>'+
+        '<div class="field" style="margin-top:14px"><button class="btn primary tiny" data-action="open-overall">Open overall list</button></div>'+
+      '</div>'+
+      (!canWrite()?'':'<div class="tile">'+
+        '<div class="t-kick">New session</div>'+
+        '<div class="t-title">Create a new meeting</div>'+
+        '<div class="t-desc">A focused workspace for one meeting. Add questions manually or bulk-paste them with AI sorting.</div>'+
+        '<div class="field" style="margin-top:14px">'+
+          '<input type="text" id="newMeetingName" placeholder="Meeting name, e.g. Kickoff Aug 12">'+
+          '<button class="btn primary tiny" data-action="create-meeting">Create</button>'+
+        '</div>'+
+      '</div>')+
+    '</div>'+
+    '<div class="mtg-list">'+
+      '<h3>Meetings in this project</h3>'+
+      mlist+
+    '</div>'+
+  '</div>';
+}
+
+function dashboardHTML(){
+  const pMeetings=projectMeetings(UI.currentProjectId);
+  const meetingIds=pMeetings.map(function(m){return m.id;});
+  const allQs=STATE.questions.filter(function(q){return meetingIds.indexOf(q.meetingId)!==-1;});
+  const tot={ total:allQs.length,
+    open:allQs.filter(function(q){return q.status==='open';}).length,
+    disc:allQs.filter(function(q){return q.status==='disc';}).length,
+    solved:allQs.filter(function(q){return q.status==='solved';}).length };
+
+  const bySection={};
+  STATE.sections.filter(function(sec){return meetingIds.indexOf(sec.meetingId)!==-1;}).forEach(function(sec){
+    const key=sec.title.toLowerCase();
+    if(!bySection[key]) bySection[key]={title:sec.title,total:0,open:0,disc:0,solved:0};
+    STATE.questions.filter(function(q){return q.sectionId===sec.id;}).forEach(function(q){
+      bySection[key].total++; bySection[key][q.status]=(bySection[key][q.status]||0)+1;
+    });
+  });
+  const sectionRows=Object.keys(bySection).map(function(k){return bySection[k];}).sort(function(a,b){ return (b.open-a.open)||(b.total-a.total); });
+
+  const sectionBars=sectionRows.map(function(s){
+    const op=s.total?(100*s.open/s.total):0, dp=s.total?(100*s.disc/s.total):0, sp=s.total?(100*s.solved/s.total):0;
+    return '<div style="margin-bottom:13px">'+
+      '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;gap:10px">'+
+        '<span style="font-weight:600">'+esc(s.title)+'</span>'+
+        '<span class="editor-hint">'+s.total+' total · '+(s.open||0)+' open · '+(s.disc||0)+' disc · '+(s.solved||0)+' solved</span>'+
+      '</div>'+
+      '<div style="display:flex;height:10px;border-radius:6px;overflow:hidden;background:var(--line)">'+
+        '<div style="width:'+op+'%;background:var(--gold)"></div>'+
+        '<div style="width:'+dp+'%;background:var(--teal)"></div>'+
+        '<div style="width:'+sp+'%;background:var(--green)"></div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  const meetingRows=pMeetings.slice().sort(function(a,b){ return ((b.isOverall?1:0)-(a.isOverall?1:0))||(new Date(b.createdAt)-new Date(a.createdAt)); }).map(function(m){
+    const st=meetingStats(m.id);
+    const pct=st.total?Math.round(100*st.solved/st.total):0;
+    return '<div class="mtg-row">'+
+        '<div style="flex:1">'+
+          '<div class="mtg-name">'+(m.isOverall?'★ ':'')+esc(m.isOverall?'Overall questions':m.name)+'</div>'+
+          '<div class="mtg-meta">'+st.total+' question(s) · '+st.open+' open · '+st.disc+' in discussion · '+st.solved+' solved ('+pct+'%)</div>'+
+        '</div>'+
+        '<button class="btn tiny" data-action="'+(m.isOverall?'open-overall':'open-meeting')+'" data-id="'+m.id+'">Open</button>'+
+      '</div>';
+  }).join('');
+
+  return '<div class="land">'+
+    '<div class="field" style="margin-bottom:6px"><button class="btn ghost tiny" data-action="toggle-dashboard">← Back</button></div>'+
+    '<h2>Dashboard</h2>'+
+    '<p class="land-sub">Across all meetings in '+esc(currentProjectName())+'</p>'+
+    '<div class="statsbar" style="margin-top:18px">'+
+      '<span class="stat"><span class="dot open"></span>Open <b>'+tot.open+'</b></span>'+
+      '<span class="stat"><span class="dot disc"></span>In discussion <b>'+tot.disc+'</b></span>'+
+      '<span class="stat"><span class="dot solved"></span>Solved <b>'+tot.solved+'</b></span>'+
+      '<span class="stat">Total <b>'+tot.total+'</b></span>'+
+    '</div>'+
+    '<div class="panel" style="margin-top:8px">'+
+      '<h3>By section — most open first</h3>'+
+      (sectionBars||'<p class="empty-hint">No sections yet.</p>')+
+    '</div>'+
+    '<div class="mtg-list">'+
+      '<h3>Meetings in this project</h3>'+
+      meetingRows+
+    '</div>'+
+  '</div>';
+}
+
+function statsHTML(){
+  const qs=meetingQuestions(UI.currentMeetingId);
+  const o=qs.filter(function(q){return q.status==='open';}).length, d=qs.filter(function(q){return q.status==='disc';}).length, s=qs.filter(function(q){return q.status==='solved';}).length;
+  const f=UI.filter;
+  return '<div class="statsbar">'+
+    '<span class="stat"><span class="dot open"></span>Open <b>'+o+'</b></span>'+
+    '<span class="stat"><span class="dot disc"></span>In discussion <b>'+d+'</b></span>'+
+    '<span class="stat"><span class="dot solved"></span>Solved <b>'+s+'</b></span>'+
+    '<span class="stat">Total <b>'+qs.length+'</b></span>'+
+    '<div class="filters">'+
+      '<button class="filter '+(f==='all'?'active':'')+'" data-action="filter" data-v="all">All</button>'+
+      '<button class="filter '+(f==='open'?'active':'')+'" data-action="filter" data-v="open">Open</button>'+
+      '<button class="filter '+(f==='disc'?'active':'')+'" data-action="filter" data-v="disc">Discussion</button>'+
+      '<button class="filter '+(f==='solved'?'active':'')+'" data-action="filter" data-v="solved">Solved</button>'+
+    '</div>'+
+  '</div>';
+}
+
+function adminHTML(){
+  return '<div class="panel">'+
+    '<h3>Add section to "'+esc(currentMeetingName())+'"</h3>'+
+    '<div class="field">'+
+      '<input type="text" id="newSectionTitle" placeholder="e.g. PARTNERSHIPS & PR">'+
+      '<button class="btn primary tiny" data-action="add-section-admin">Add section</button>'+
+    '</div>'+
+    '<p class="editor-hint" style="margin-top:10px">Sections and questions belong to the workspace you are currently viewing. To manage users, admins, and passwords, open <button class="btn tiny ghost" style="margin-left:2px" data-action="toggle-users">👤 Users &amp; Access</button> in the toolbar.</p>'+
+  '</div>';
+}
+
+function emptyMeetingHTML(){
+  return '<div class="panel" style="text-align:center;padding:28px 20px">'+
+    '<h3 style="color:var(--rose)">This meeting has no questions yet</h3>'+
+    '<p class="editor-hint" style="margin:0 auto 14px;max-width:440px">Bulk-paste your questions and let AI sort and clean them — or add a section and questions manually below.</p>'+
+    '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">'+
+      '<button class="btn primary tiny" data-action="open-bulk">+ Bulk add questions (AI)</button>'+
+    '</div>'+
+  '</div>';
+}
+
+function bulkStatusPanelHTML(){
+  const selCount=Object.keys(UI.bulkSelected).filter(function(k){return UI.bulkSelected[k];}).length;
+  return '<div class="panel" style="border-color:var(--rose)">'+
+    '<h3 style="color:var(--rose)">Bulk status actions</h3>'+
+    '<p class="editor-hint">Tick the checkboxes on questions below, then apply one action to all selected at once.</p>'+
+    '<div class="field">'+
+      '<span class="stat" style="margin-right:auto"><b>'+selCount+'</b> selected</span>'+
+      '<button class="btn tiny ghost" data-action="bulk-select-all">Select all in view</button>'+
+      '<button class="btn tiny ghost" data-action="bulk-select-none">Clear selection</button>'+
+    '</div>'+
+    '<textarea id="bulkStatusResultText" class="result-editor-ta" style="margin-top:10px" placeholder="Shared result text to apply to all selected questions…">'+esc(UI.bulkStatusText||'')+'</textarea>'+
+    '<div class="modal-actions">'+
+      '<button class="btn primary tiny" data-action="bulk-status-solve">Set result for selected &amp; mark Solved</button>'+
+      '<button class="btn tiny danger" data-action="bulk-status-clear">Clear results for selected</button>'+
+      '<button class="btn ghost tiny" data-action="toggle-bulk-mode">Exit bulk mode</button>'+
+    '</div>'+
+  '</div>';
+}
+
+function sectionHTML(sec){
+  const collapsed=!!UI.collapsed[sec.id];
+  const qs=STATE.questions.filter(function(q){return q.sectionId===sec.id;}).sort(function(a,b){return a.order-b.order;});
+  const secs=meetingSections(sec.meetingId);
+  const num=secs.findIndex(function(s){return s.id===sec.id;})+1;
+  const filtered=qs.filter(function(q){return UI.filter==='all'||q.status===UI.filter;});
+  const visibleNote=(UI.filter!=='all')?(filtered.length+'/'+qs.length+' shown'):(qs.length+' question'+(qs.length!==1?'s':''));
+  let body='';
+  if(qs.length===0){
+    body+='<p class="empty-hint">No questions yet in this section.</p>';
+  }else if(filtered.length===0){
+    body+='<p class="empty-hint">No questions match the current filter.</p>';
+  }else if(UI.filter==='all'){
+    const activeQs=filtered.filter(function(q){return q.status!=='solved';});
+    const solvedQs=filtered.filter(function(q){return q.status==='solved';});
+    if(activeQs.length===0 && solvedQs.length>0) body+='<p class="empty-hint">All questions in this section are solved — see below.</p>';
+    body+=activeQs.map(function(q){ return questionHTML(q, qs.indexOf(q)+1); }).join('');
+    if(solvedQs.length>0){
+      const sCollapsed=UI.solvedCollapsed[sec.id]!==false;
+      body+='<div class="sec-head" style="padding:10px 4px;cursor:pointer;border-top:1px dashed var(--line);margin-top:6px" data-action="toggle-solved-block" data-id="'+sec.id+'">'+
+          '<span class="sec-num" style="background:var(--green);width:24px;height:24px;font-size:10px">✓</span>'+
+          '<span class="sec-title" style="font-size:15px">Solved</span>'+
+          '<span class="sec-meta">'+solvedQs.length+' question'+(solvedQs.length!==1?'s':'')+'</span>'+
+          '<span class="chev" style="'+(sCollapsed?'transform:rotate(-90deg)':'')+'">▾</span>'+
+        '</div>'+
+        (sCollapsed?'':solvedQs.map(function(q){ return questionHTML(q, qs.indexOf(q)+1); }).join(''));
+    }
+  }else{
+    body+=filtered.map(function(q){ return questionHTML(q, qs.indexOf(q)+1); }).join('');
+  }
+  const addOpen=!!UI.addQOpen[sec.id];
+  body+='<div class="sec-tools">'+
+      (canWrite()?'<button class="btn tiny" data-action="toggle-addq" data-id="'+sec.id+'">+ Add question</button>':'')+
+      (isAdmin()?'<button class="btn tiny ghost" data-action="rename-section" data-id="'+sec.id+'">Rename</button>'+
+      '<button class="btn tiny danger" data-action="del-section" data-id="'+sec.id+'">Delete section</button>':'')+
+    '</div>'+
+    '<div class="addq-box '+(addOpen?'show':'')+'" id="addq_'+sec.id+'">'+
+      '<textarea id="addqText_'+sec.id+'" placeholder="Type the new question…"></textarea>'+
+      '<div class="editor-row">'+
+        '<button class="btn primary tiny" data-action="add-question" data-id="'+sec.id+'">Save question</button>'+
+        '<button class="btn ghost tiny" data-action="toggle-addq" data-id="'+sec.id+'">Cancel</button>'+
+      '</div>'+
+    '</div>';
+  return '<section class="section '+(collapsed?'collapsed':'')+'" data-sec="'+sec.id+'">'+
+    '<div class="sec-head" data-action="toggle-section" data-id="'+sec.id+'">'+
+      '<span class="sec-num">'+String(num).padStart(2,'0')+'</span>'+
+      '<span class="sec-title">'+esc(sec.title)+'</span>'+
+      '<span class="sec-meta">'+visibleNote+'</span>'+
+      '<span class="chev">▾</span>'+
+    '</div>'+
+    '<div class="sec-body">'+body+'</div>'+
+  '</section>';
+}
+
+function resultEditorHTML(q){
+  const sug=UI.aiSuggestion[q.id];
+  const prefill = q.result ? esc(q.result) : (sug&&sug.suggestion?esc(sug.suggestion):'');
+  const note = (!q.result && sug) ? '<p class="editor-hint" style="margin:0 0 6px;color:'+(sug.consensus==='none'?'var(--rose)':'var(--teal)')+'">✨ AI: '+esc(sug.note||'')+'</p>' : '';
+  return note+'<textarea class="result-editor-ta" id="result_'+q.id+'" placeholder="Write the agreed result / decision…">'+prefill+'</textarea>'+
+    '<div class="editor-row">'+
+      '<button class="btn primary tiny" data-action="save-result" data-id="'+q.id+'">Save result &amp; mark Solved</button>'+
+      '<button class="btn ghost tiny" data-action="set-result-open" data-id="'+q.id+'">Cancel</button>'+
+    '</div>';
+}
+
+function questionHTML(q, idx){
+  const ans=STATE.answers.filter(function(a){return a.questionId===q.id;});
+  const me=currentUser();
+  const myAns=ans.find(function(a){return a.userId===me.id;});
+  const admin=isAdmin();
+  const solvedOk=hasResult(q);
+  const editing=!!UI.resultEditOpen[q.id];
+
+  let ansHTML;
+  if(ans.length===0) ansHTML='<p class="no-ans">No answers yet.</p>';
+  else ansHTML=ans.map(function(a){
+    const author=STATE.users.find(function(u){return u.id===a.userId;});
+    const mine=a.userId===me.id;
+    const isSrc=q.resultFromAnswerId===a.id;
+    return '<div class="ans '+(mine?'mine':'')+' '+(isSrc?'is-result':'')+'">'+
+        '<div class="ans-head">'+
+          '<span class="ans-author">'+esc(author?author.name:'Unknown')+'</span>'+
+          (mine?'<span class="you-tag">YOU</span>':'')+
+          (isSrc?'<span class="result-tag">✓ RESULT</span>':'')+
+          '<span>· '+fmtTime(a.updatedAt)+'</span>'+
+          (admin&&!isSrc?'<button class="btn tiny ghost mark-btn" data-action="mark-result" data-id="'+q.id+'" data-aid="'+a.id+'">Mark as result</button>':'')+
+        '</div>'+
+        '<div class="ans-body">'+esc(a.text)+'</div>'+
+      '</div>';
+  }).join('');
+
+  let resultHTML='';
+  if(solvedOk){
+    const by=STATE.users.find(function(u){return u.id===q.resultBy;});
+    const srcNote=q.resultFromAnswerId?' · from a marked answer':'';
+    resultHTML='<div class="result-box '+(editing?'editing':'')+'">'+
+        '<div class="result-head">'+
+          '<span class="result-label">✓ Result</span>'+
+          '<span class="result-meta">'+(by?esc(by.name)+' · ':'')+fmtTime(q.resultAt)+srcNote+'</span>'+
+          (admin?'<span class="result-actions">'+
+            '<button class="btn tiny ghost" data-action="set-result-open" data-id="'+q.id+'">'+(editing?'Close':'Edit')+'</button>'+
+            '<button class="btn tiny danger" data-action="clear-result" data-id="'+q.id+'">Clear</button>'+
+          '</span>':'')+
+        '</div>'+
+        (editing?resultEditorHTML(q):'<div class="result-body">'+esc(q.result)+'</div>')+
+      '</div>';
+  }else if(admin){
+    resultHTML=editing?('<div class="result-box editing">'+resultEditorHTML(q)+'</div>')
+      :('<div class="result-cta"><button class="btn tiny" data-action="set-result-open" data-id="'+q.id+'">+ Set result (marks Solved)</button></div>');
+  }
+
+  return '<div class="q" data-q="'+q.id+'">'+
+    (UI.bulkStatusMode?'<label class="chk" style="margin-bottom:6px"><input type="checkbox" data-action="toggle-bulk-select" data-id="'+q.id+'" '+(UI.bulkSelected[q.id]?'checked':'')+'> Select</label>':'')+
+    '<div class="q-top">'+
+      '<div class="q-text"><span class="num">'+String(idx).padStart(2,'0')+'</span>'+esc(q.text)+'</div>'+
+      '<span class="pill '+STATUS_CLASS[q.status]+'">'+STATUS_LABEL[q.status]+'</span>'+
+    '</div>'+
+    '<div class="editor-row" style="margin-top:6px">'+
+      (!solvedOk?'<span class="editor-hint">Status updates automatically — becomes "In Discussion" on the first answer, "Solved" once a result is set</span>':'')+
+      (admin?'<span class="q-admin" style="margin-left:auto">'+
+        '<button class="btn tiny ghost" data-action="edit-question" data-id="'+q.id+'">Edit</button>'+
+        '<button class="btn tiny danger" data-action="del-question" data-id="'+q.id+'">Delete</button>'+
+      '</span>':'')+
+    '</div>'+
+    resultHTML+
+    (admin&&!solvedOk&&ans.length>0?'<div class="result-cta" style="margin-top:6px"><button class="btn tiny" data-action="ai-suggest-result" data-id="'+q.id+'" '+(UI.aiSuggestBusy[q.id]?'disabled':'')+'>'+(UI.aiSuggestBusy[q.id]?'Thinking…':'✨ Suggest result (AI)')+'</button></div>'+(UI.aiSuggestError[q.id]?'<p class="editor-hint" style="color:var(--rose);margin-top:4px">'+esc(UI.aiSuggestError[q.id])+'</p>':''):'')+
+    '<div class="answers">'+ansHTML+'</div>'+
+    (!canWrite()?'<p class="editor-hint" style="margin-top:12px">View-only account: you can read everything but cannot add answers.</p>':'<div class="answer-editor">'+
+      '<textarea id="ans_'+q.id+'" placeholder="'+(myAns?'Edit your answer…':'Write your answer…')+'">'+(myAns?esc(myAns.text):'')+'</textarea>'+
+      '<div class="editor-row">'+
+        '<button class="btn primary tiny" data-action="save-answer" data-id="'+q.id+'">'+(myAns?'Update my answer':'Save my answer')+'</button>'+
+        '<span class="editor-hint">One answer per person · editable anytime</span>'+
+      '</div>'+
+    '</div>')+
+  '</div>';
+}
+
+function addSectionHTML(){
+  if(!canWrite()) return '';
+  return '<div class="panel" style="margin-top:8px">'+
+    '<h3>Add a section to "'+esc(currentMeetingName())+'"</h3>'+
+    '<div class="field">'+
+      '<input type="text" id="newSectionTitleMain" placeholder="e.g. PARTNERSHIPS & PR">'+
+      '<button class="btn primary tiny" data-action="add-section-main">Add section</button>'+
+      '<button class="btn tiny" data-action="open-bulk">+ Bulk add questions (AI)</button>'+
+    '</div>'+
+  '</div>';
+}
+
+function confirmModalHTML(){
+  const st=UI.confirmModal; if(!st) return '';
+  return '<div class="modal-overlay">'+
+    '<div class="modal-card" style="max-width:440px">'+
+      '<div class="modal-top"><div class="modal-kicker" style="font-size:17px">Please confirm</div><button class="btn ghost tiny" data-action="confirm-no">✕</button></div>'+
+      '<p style="font-size:14px;line-height:1.5;white-space:pre-wrap">'+esc(st.message)+'</p>'+
+      '<div class="modal-actions">'+
+        '<button class="btn primary tiny" data-action="confirm-yes">'+esc(st.confirmLabel||'Yes, continue')+'</button>'+
+        '<button class="btn tiny" data-action="confirm-no">Cancel</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+
+function passwordModalHTML(){
+  const st=UI.pwModal; if(!st) return '';
+  if(st.mode==='newadmin'){
+    const err=UI.pwModalError?('<p style="color:var(--rose);font-family:var(--mono);font-size:12px;margin:8px 0 0">'+esc(UI.pwModalError)+'</p>'):'';
+    return '<div class="modal-overlay">'+
+      '<div class="modal-card" style="max-width:420px">'+
+        '<div class="modal-top"><div class="modal-kicker" style="font-size:17px">Set password for new '+(st.makeSuper?'super admin':'admin')+' "'+esc(st.name)+'"</div><button class="btn ghost tiny" data-action="pw-cancel">✕</button></div>'+
+        '<p class="editor-hint" style="margin:0 0 8px">'+(st.makeSuper?'Super admin':'Admin')+' accounts require a password before they can be created.</p>'+
+        '<div class="field" style="flex-direction:column;align-items:stretch;gap:8px">'+
+          '<input type="password" id="pwNew" placeholder="Password (min. 4 characters)" autocomplete="off">'+
+          '<input type="password" id="pwConfirm" placeholder="Confirm password" autocomplete="off">'+
+        '</div>'+err+
+        '<div class="modal-actions">'+
+          '<button class="btn primary tiny" data-action="pw-submit-newadmin">Create '+(st.makeSuper?'super admin':'admin')+'</button>'+
+          '<button class="btn tiny" data-action="pw-cancel">Cancel</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }
+  const target=STATE.users.find(function(u){return u.id===st.userId;});
+  if(!target){ return ''; }
+  let title='', body='';
+  if(st.mode==='login'){
+    title='Password for "'+esc(target.name)+'"';
+    body='<div class="field" style="flex-direction:column;align-items:stretch;gap:8px">'+
+      '<input type="password" id="pwInput1" placeholder="Password" autocomplete="off">'+
+    '</div>';
+  }else if(st.mode==='set'){
+    title=(target.pinHash?'Change password for "':'Set password for "')+esc(target.name)+'"';
+    body='<div class="field" style="flex-direction:column;align-items:stretch;gap:8px">'+
+      (target.pinHash?'<input type="password" id="pwCurrent" placeholder="Current password" autocomplete="off">':'')+
+      '<input type="password" id="pwNew" placeholder="New password (min. 4 characters)" autocomplete="off">'+
+      '<input type="password" id="pwConfirm" placeholder="Confirm new password" autocomplete="off">'+
+    '</div>';
+  }else if(st.mode==='reset'){
+    title='Reset password for "'+esc(target.name)+'"?';
+    body='<p class="editor-hint">They will be able to log in without a password until they set a new one.</p>';
+  }
+  const err=UI.pwModalError?('<p style="color:var(--rose);font-family:var(--mono);font-size:12px;margin:8px 0 0">'+esc(UI.pwModalError)+'</p>'):'';
+  const primaryLabel = st.mode==='login' ? 'Log in' : st.mode==='set' ? 'Save password' : 'Reset password';
+  const primaryAction = st.mode==='login' ? 'pw-submit-login' : st.mode==='set' ? 'pw-submit-set' : 'pw-submit-reset';
+  return '<div class="modal-overlay">'+
+    '<div class="modal-card" style="max-width:420px">'+
+      '<div class="modal-top"><div class="modal-kicker" style="font-size:17px">'+title+'</div><button class="btn ghost tiny" data-action="pw-cancel">✕</button></div>'+
+      body+err+
+      '<div class="modal-actions">'+
+        '<button class="btn primary tiny" data-action="'+primaryAction+'" data-id="'+target.id+'">'+primaryLabel+'</button>'+
+        '<button class="btn tiny" data-action="pw-cancel">Cancel</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+
+function usersAccessHTML(){
+  const meId=UI.currentUserId;
+  const iAmSuper=isSuperAdmin();
+  const adminCount=STATE.users.filter(function(u){return u.isAdmin;}).length;
+  const superCount=STATE.users.filter(function(u){return u.isSuperAdmin;}).length;
+  const rows=sortedUsers(STATE.users).map(function(u){
+    let pwdControls='';
+    if(u.isAdmin||u.isSuperAdmin){
+      if(u.id===meId){
+        pwdControls='<button class="btn tiny ghost" data-action="set-password" data-id="'+u.id+'">'+(u.pinHash?'Change my password':'Set my password')+'</button>';
+      }else{
+        pwdControls=(u.pinHash?'<span class="editor-hint" style="margin-right:6px">🔒 protected</span><button class="btn tiny ghost" data-action="reset-password" data-id="'+u.id+'">Reset password</button>':'<span class="editor-hint">no password set</span>');
+      }
+    }else{
+      pwdControls='<span class="editor-hint">'+(u.isAuto?'system user — not for login':'no password needed')+'</span>';
+    }
+    const viewerBtn = (!u.isAdmin && !u.isSuperAdmin && !u.isAuto) ? '<button class="btn tiny ghost" data-action="toggle-viewer" data-id="'+u.id+'">'+(u.isViewer?'Make contributor':'Make viewer')+'</button>' : '';
+    const superBtn = (iAmSuper && !u.isAuto) ? '<button class="btn tiny ghost" data-action="toggle-superadmin" data-id="'+u.id+'">'+(u.isSuperAdmin?'Revoke super admin':'Grant super admin')+'</button>' : '';
+    const roleBadge = roleBadgeHTML(u);
+    return '<div class="userline">'+
+      '<span class="nm">'+esc(u.name)+roleBadge+(u.isAuto?'<span class="badge-admin" style="background:var(--teal-soft);color:var(--teal);border-color:#bcdad6">auto</span>':'')+(u.id===meId?'<span class="you-tag" style="margin-left:6px">YOU</span>':'')+'</span>'+
+      pwdControls+viewerBtn+superBtn+
+      (STATE.users.length>1?'<button class="btn tiny danger" data-action="del-user" data-id="'+u.id+'">Remove</button>':'<span class="editor-hint">last user</span>')+
+    '</div>';
+  }).join('');
+  return '<div class="land">'+
+    '<div class="field" style="margin-bottom:6px">'+
+      '<button class="btn ghost tiny" data-action="toggle-users">← Back</button>'+
+    '</div>'+
+    '<h2>Users &amp; Access</h2>'+
+    '<p class="land-sub">'+STATE.users.length+' user(s) · '+adminCount+' admin(s) · '+superCount+' super admin(s)</p>'+
+    '<div class="panel" style="margin-top:18px">'+
+      '<h3>All users</h3>'+
+      rows+
+      '<div class="field">'+
+        '<input type="text" id="newUserName" placeholder="New user name…">'+
+        '<label class="chk"><input type="checkbox" id="newUserAdmin"> Admin</label>'+
+        '<label class="chk"><input type="checkbox" id="newUserViewer"> Viewer (read-only)</label>'+
+        (iAmSuper?'<label class="chk"><input type="checkbox" id="newUserSuper"> Super admin</label>':'')+
+        '<button class="btn primary tiny" data-action="add-user">Add user</button>'+
+      '</div>'+
+      '<p class="editor-hint" style="margin-top:10px">Contributors (the default) can answer and add questions; Viewers can only read. Neither needs a password. Creating a user as Admin or Super admin requires setting a password immediately — you\'ll be asked for it right after clicking "Add user". Only super admins can grant super admin status. If someone forgets their password later, an admin can reset it here so they can log in and set a new one.</p>'+
+    '</div>'+
+  '</div>';
+}
+
+function loginHTML(){
+  const users=sortedUsers(STATE.users.filter(function(u){return !u.isAuto;})).map(function(u){
+    const badge = roleBadgeHTML(u);
+    return '<button class="user-pick" data-action="login" data-id="'+u.id+'">'+
+      '<span>'+esc(u.name)+'</span>'+badge+((u.isAdmin||u.isSuperAdmin)&&u.pinHash?'<span title="Password protected" style="margin-left:6px">🔒</span>':'')+
+    '</button>';
+  }).join('');
+  return '<div class="login-screen">'+
+    '<div class="login-card">'+
+      '<h2>Select your user</h2>'+
+      '<p>Regular users: no password. Admins with 🔒 need their password.</p>'+
+      '<div class="user-buttons">'+users+'</div>'+
+      '<p class="login-note">Users are managed by an admin after sign-in.<br>'+(hasStore?'All entries are shared with the team and saved automatically.':'⚠ Shared storage unavailable in this view — entries stay in memory only.')+'<br>Once you enter an admin password correctly, this device remembers it for 24 hours.</p>'+
+      '<button class="btn ghost tiny" style="margin-top:10px" data-action="forget-sessions">Forget remembered admin logins on this device</button>'+
+    '</div>'+
+  '</div>';
+}
+
+/* ============================ EXPORT ============================ */
+function orderedSections(){ return STATE.sections.filter(function(s){return s.meetingId===UI.currentMeetingId;}).sort(function(a,b){return a.order-b.order;}); }
+function orderedQuestions(secId){ return STATE.questions.filter(function(q){return q.sectionId===secId;}).sort(function(a,b){return a.order-b.order;}); }
+function answersFor(qId){ return STATE.answers.filter(function(a){return a.questionId===qId;}).map(function(a){ const u=STATE.users.find(function(x){return x.id===a.userId;}); return {author:u?u.name:'Unknown',text:a.text,updatedAt:a.updatedAt}; }); }
+
+function exportMarkdown(){
+  let out='# Consulting Kings — '+currentMeetingName()+'\n\n_Exported '+new Date().toLocaleString()+'_\n';
+  orderedSections().forEach(function(s,si){
+    out+='\n## '+String(si+1).padStart(2,'0')+' · '+s.title+'\n';
+    const qs=orderedQuestions(s.id);
+    if(qs.length===0){ out+='\n_(no questions)_\n'; return; }
+    qs.forEach(function(q,qi){
+      out+='\n**'+(qi+1)+'. '+q.text+'**  \nStatus: '+(STATUS_EXPORT[q.status]||q.status)+'\n';
+      if(hasResult(q)) out+='\n> **Result'+(q.resultFromAnswerId?' (from a marked answer)':'')+':** '+String(q.result).replace(/\n/g,'\n> ')+'\n';
+      const ans=answersFor(q.id);
+      if(ans.length){ out+='\nAnswers:\n'; ans.forEach(function(a){ out+='- _'+a.author+'_ ('+fmtTime(a.updatedAt)+'): '+String(a.text).replace(/\n/g,' ')+'\n'; }); }
+    });
+  });
+  return out;
+}
+function csvCell(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
+function exportCSV(){
+  const head=['Workspace','Section','Question No','Question','Status','Result','Result From Answer','Answers'];
+  const lines=[head.map(csvCell).join(',')];
+  const wn=currentMeetingName();
+  orderedSections().forEach(function(s){
+    orderedQuestions(s.id).forEach(function(q,qi){
+      const aj=answersFor(q.id).map(function(a){ return a.author+': '+a.text; }).join('\n');
+      lines.push([wn,s.title,qi+1,q.text,STATUS_EXPORT[q.status]||q.status,hasResult(q)?q.result:'',q.resultFromAnswerId?'yes':'',aj].map(csvCell).join(','));
+    });
+  });
+  return '\ufeff'+lines.join('\r\n');
+}
+function exportJSON(){
+  const data={ exportedAt:new Date().toISOString(), workspace:currentMeetingName(),
+    sections: orderedSections().map(function(s,si){ return { no:si+1, title:s.title,
+      questions: orderedQuestions(s.id).map(function(q,qi){ return { no:qi+1, question:q.text, status:STATUS_EXPORT[q.status]||q.status,
+        result:hasResult(q)?q.result:null, resultFromAnswer:!!q.resultFromAnswerId, answers:answersFor(q.id) }; }) }; }) };
+  return JSON.stringify(data,null,2);
+}
+function buildExport(fmt){ if(fmt==='csv') return exportCSV(); if(fmt==='json') return exportJSON(); return exportMarkdown(); }
+
+function exportModalHTML(){
+  const fmt=UI.exportFormat||'md';
+  const content=buildExport(fmt);
+  const withRes=meetingQuestions(UI.currentMeetingId).filter(hasResult).length;
+  function tab(v,l){ return '<button class="exp-tab '+(fmt===v?'active':'')+'" data-action="export-format" data-v="'+v+'">'+l+'</button>'; }
+  return '<div class="modal-overlay">'+
+    '<div class="modal-card">'+
+      '<div class="modal-top">'+
+        '<div><div class="modal-kicker">Export · '+esc(currentMeetingName())+'</div>'+
+        '<div class="modal-sub">'+meetingQuestions(UI.currentMeetingId).length+' questions · '+withRes+' with a result</div></div>'+
+        '<button class="btn ghost tiny" data-action="close-export">✕ Close</button>'+
+      '</div>'+
+      '<div class="exp-tabs">'+tab('md','Markdown')+tab('csv','CSV')+tab('json','JSON')+'</div>'+
+      '<textarea id="exportArea" class="export-area" readonly>'+esc(content)+'</textarea>'+
+      '<div class="modal-actions">'+
+        '<button class="btn primary tiny" data-action="export-download">Download .'+fmt+'</button>'+
+        '<button class="btn tiny" data-action="export-copy">Copy to clipboard</button>'+
+        '<span class="editor-hint">Markdown for docs · CSV for spreadsheets · JSON for full data</span>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+async function copyText(text){
+  try{ await navigator.clipboard.writeText(text); toast('Copied to clipboard'); return; }catch(e){}
+  const ta=document.getElementById('exportArea');
+  if(ta){ ta.focus(); ta.select(); try{ document.execCommand('copy'); toast('Copied to clipboard'); return; }catch(e2){} }
+  toast('Copy blocked — select the text manually');
+}
+async function downloadText(filename,mime,text){
+  let dl=null;
+  try{ dl=(window.claude && typeof window.claude.use==='function') ? await window.claude.use('downloads') : null; }catch(e){ dl=null; }
+  if(!dl){ toast('Download is not available in this view — use Copy instead'); return; }
+  try{ await dl.save({filename:filename,data:text}); toast('Saved'); }
+  catch(e){ if(e && e.code==='declined') return; toast('Download failed — use Copy instead'); }
+}
+
+/* ============================ BULK ADD (AI) ============================ */
+const SAMPLE_ERR={
+  not_granted:'Claude access was declined for this page. Reload and allow it to use AI.',
+  sampling_disabled:'Claude is not available for this account.',
+  rate_limited:'Too many AI requests right now. Try again in a minute.',
+  prompt_too_large:'The text is too long for one AI request. Use a shorter excerpt.',
+  invalid_json:'The AI answer could not be read. Try again.',
+  refused:'The AI declined this input.',
+  session_expired:'Please sign in to Claude again.'
+};
+async function askJson(prompt){
+  let sample=null;
+  try{ sample=(window.claude && typeof window.claude.use==='function') ? await window.claude.use('sample') : null; }catch(e){ sample=null; }
+  if(!sample) throw new Error('AI is not available in this view');
+  try{ return await sample.json(prompt,{modelTier:'default'}); }
+  catch(e){ throw new Error((e && SAMPLE_ERR[e.code]) || 'AI request failed, try again'); }
+}
+
+function aiSortQuestions(rawText, existingTitles){
+  const titles=existingTitles.length?existingTitles.map(function(t){return '- '+t;}).join('\n'):'(none yet)';
+  const prompt='You are organizing brainstorming questions for an internal business "decision log" (Consulting Kings, a consulting company offering multichannel marketing, media buying, AI tools integration and conversion boosting).\n\n'+
+    'EXISTING SECTIONS in this workspace:\n'+titles+'\n\n'+
+    'TASK: Below is raw text containing questions. It may be messy, contain typos, or put several questions on one line.\n'+
+    '1. Split it into individual questions.\n'+
+    '2. Lightly fix spelling, grammar and capitalization while keeping the original meaning. Keep each item phrased as a question.\n'+
+    '3. Assign each question to the MOST fitting existing section, reusing the EXACT section name. If nothing fits, propose a concise NEW section name in UPPERCASE.\n\n'+
+    'Return ONLY valid compact JSON (no markdown fences, no commentary) in exactly this shape:\n'+
+    '{"sections":["SECTION NAME","..."],"items":[{"q":"corrected question?","s":0}]}\n'+
+    'where each item\'s "s" is the index of its section within the "sections" array.\n\n'+
+    'RAW TEXT:\n"""\n'+rawText+'\n"""';
+  return askJson(prompt);
+}
+
+function ensureAutoTranscriptUser(d){
+  let u=d.users.find(function(x){return x.isAuto;});
+  if(!u){ u={id:uid('usr'),name:'AUTO TRANSCRIPT',isAdmin:false,pinHash:null,isAuto:true}; d.users.push(u); }
+  return u.id;
+}
+
+function aiAnalyzeTranscript(rawText, questionList){
+  const qBlock=questionList.map(function(q){ return '['+q.id+'] '+q.text; }).join('\n');
+  const prompt='You are analyzing a transcript (from an audio recording — it may contain filler words, mistakes, or informal phrasing) for an internal business decision-log tool (Consulting Kings consulting company).\n\n'+
+    'The speaker usually reads a question from a fixed list out loud, then answers it, one after another — though not always cleanly, and there may be tangents or repeated points.\n\n'+
+    'EXISTING QUESTIONS IN THIS WORKSPACE (format: [id] question text):\n'+qBlock+'\n\n'+
+    'TASK:\n'+
+    '1. For each existing question above that was clearly asked and answered in the transcript, extract ONLY the answer content as a clean, faithful statement in the speaker\'s own meaning (light grammar/filler cleanup is fine; do not invent information; do not omit key points). Reference it by its exact [id] from the list above.\n'+
+    '2. Separately, detect any genuinely NEW questions raised in the transcript that are NOT covered by the existing list. For each, extract the question text (lightly cleaned) and, if an answer was given right after, extract that answer too.\n\n'+
+    'Return ONLY compact JSON, no markdown fences, in exactly this shape:\n'+
+    '{"answers":[{"id":"<existing question id>","answer":"..."}],"newQuestions":[{"q":"...","a":"..."}]}\n'+
+    'Use an empty string for "a" if no answer was captured for a new question. Use empty arrays if nothing matches or nothing new is found.\n\n'+
+    'TRANSCRIPT:\n"""\n'+rawText+'\n"""';
+  return askJson(prompt);
+}
+
+function aiSuggestResult(qText, answersArr){
+  const ansBlock=answersArr.map(function(a,i){ return (i+1)+'. '+a.author+': '+a.text; }).join('\n');
+  const prompt='You are reviewing team answers to one question in an internal business decision-log tool (Consulting Kings consulting company).\n\n'+
+    'QUESTION: "'+qText+'"\n\n'+
+    'ANSWERS FROM THE TEAM:\n'+ansBlock+'\n\n'+
+    'TASK: Judge whether these answers converge on a consistent decision. Then propose a concise result statement (max 2-3 sentences) written in a neutral decision-log tone (no "I think", not addressed to anyone), suitable to be recorded as the official answer to this question. If the answers genuinely conflict or there is only vague/no information, set consensus to "none" and leave suggestion empty.\n\n'+
+    'Return ONLY compact JSON, no markdown fences, in exactly this shape:\n'+
+    '{"consensus":"strong"|"partial"|"none","note":"one short sentence describing the agreement level","suggestion":"proposed result text, or empty string if consensus is none"}';
+  return askJson(prompt);
+}
+
+function bulkModalHTML(){
+  const secs=meetingSections(UI.currentMeetingId);
+  let inner;
+  if(UI.bulkBusy){
+    inner='<div class="bulk-busy">Sorting &amp; cleaning your questions with AI…<br>This usually takes a few seconds.</div>';
+  }else if(UI.bulkResult){
+    inner=bulkPreviewHTML(UI.bulkResult,secs);
+  }else{
+    const plainOpts=secs.map(function(s){return '<option value="ex::'+s.id+'">'+esc(s.title)+'</option>';}).join('')+'<option value="new" '+(secs.length?'':'selected')+'>+ New section "IMPORTED QUESTIONS"</option>';
+    inner=(UI.bulkError?'<div class="storage-warn" style="margin-bottom:12px">'+esc(UI.bulkError)+'</div>':'')+
+      '<p class="editor-hint" style="margin-bottom:8px">Paste your questions — one per line or as free text. AI will split them, fix the wording, and sort them into sections. Best up to ~25 at a time.</p>'+
+      '<textarea id="bulkText" class="bulk-ta" placeholder="what is our minimum project value&#10;wich crm we use&#10;who approves the pricing ...">'+(UI.bulkText?esc(UI.bulkText):'')+'</textarea>'+
+      '<div class="modal-actions">'+
+        '<button class="btn primary tiny" data-action="bulk-run-ai">Sort &amp; clean with AI</button>'+
+        '<span class="editor-hint">or without AI →</span>'+
+        '<select id="bulkPlainSection" class="q-status-select">'+plainOpts+'</select>'+
+        '<button class="btn tiny" data-action="bulk-add-plain">Add as plain list</button>'+
+      '</div>';
+  }
+  return '<div class="modal-overlay">'+
+    '<div class="modal-card wide">'+
+      '<div class="modal-top">'+
+        '<div><div class="modal-kicker">Bulk add questions</div>'+
+        '<div class="modal-sub">'+esc(currentMeetingName())+' · AI sorting &amp; text cleanup</div></div>'+
+        '<button class="btn ghost tiny" data-action="close-bulk">✕ Close</button>'+
+      '</div>'+
+      inner+
+    '</div>'+
+  '</div>';
+}
+
+function bulkPreviewHTML(res,secs){
+  const exByName={}; secs.forEach(function(s){ exByName[s.title.toLowerCase()]=s; });
+  const buckets=(res.sections||[]).map(function(name){ const ex=exByName[String(name).toLowerCase()]; return ex?{type:'ex',id:ex.id}:{type:'new',name:String(name)}; });
+  const newNames=[]; buckets.forEach(function(b){ if(b.type==='new' && newNames.indexOf(b.name)===-1) newNames.push(b.name); });
+  const mid=UI.currentMeetingId;
+  const seenNorms={};
+  let dupCount=0;
+  let rows='';
+  (res.items||[]).forEach(function(it,i){
+    const b=buckets[it.s]||buckets[0]||{type:'new',name:'IMPORTED QUESTIONS'};
+    let opts='';
+    secs.forEach(function(s){ opts+='<option value="ex::'+s.id+'" '+((b.type==='ex'&&b.id===s.id)?'selected':'')+'>'+esc(s.title)+'</option>'; });
+    newNames.forEach(function(nm){ opts+='<option value="new::'+esc(nm)+'" '+((b.type==='new'&&b.name===nm)?'selected':'')+'>+ '+esc(nm)+' (new)</option>'; });
+    if(!secs.length && !newNames.length){ opts='<option value="new::IMPORTED QUESTIONS" selected>+ IMPORTED QUESTIONS (new)</option>'; }
+    const norm=normalizeQ(it.q);
+    const existingDup=findDuplicateInMeeting(mid,it.q,null);
+    const batchDup=!existingDup && seenNorms[norm];
+    const isDup=!!(existingDup||batchDup);
+    if(isDup) dupCount++;
+    else seenNorms[norm]=true;
+    let dupNote='';
+    if(existingDup){
+      const esec=STATE.sections.find(function(s){return s.id===existingDup.sectionId;});
+      dupNote='<div class="editor-hint" style="color:var(--rose);margin-top:3px">Already exists'+(esec?(' in "'+esc(esec.title)+'"'):'')+'</div>';
+    }else if(batchDup){
+      dupNote='<div class="editor-hint" style="color:var(--rose);margin-top:3px">Duplicate within this batch</div>';
+    }
+    rows+='<div class="bulk-row" '+(isDup?'style="opacity:.55"':'')+'>'+
+        '<input type="checkbox" id="bulk_inc_'+i+'" '+(isDup?'':'checked')+' '+(isDup?'disabled':'')+'>'+
+        '<div class="bulk-q">'+esc(it.q)+dupNote+'</div>'+
+        '<select id="bulk_sec_'+i+'" '+(isDup?'disabled':'')+'>'+opts+'</select>'+
+      '</div>';
+  });
+  return '<p class="editor-hint" style="margin:2px 0 6px">'+((res.items||[]).length)+' question(s) detected'+(newNames.length?(' · '+newNames.length+' new section(s) proposed'):'')+(dupCount?(' · <span style="color:var(--rose)">'+dupCount+' duplicate(s) auto-skipped</span>'):'')+'. Untick any you don\'t want, or change the target section.</p>'+
+    '<div class="bulk-list">'+rows+'</div>'+
+    '<div class="modal-actions">'+
+      '<button class="btn primary tiny" data-action="bulk-confirm">Add to workspace</button>'+
+      '<button class="btn tiny" data-action="bulk-back">Back</button>'+
+    '</div>';
+}
+
+function collectBulkPlan(){
+  const r=UI.bulkResult; if(!r||!Array.isArray(r.items)) return [];
+  const rows=[];
+  r.items.forEach(function(it,i){
+    const inc=document.getElementById('bulk_inc_'+i);
+    if(!inc || !inc.checked || inc.disabled) return;
+    const sel=document.getElementById('bulk_sec_'+i);
+    rows.push({ q:it.q, target: sel?sel.value:'new::IMPORTED QUESTIONS' });
+  });
+  return rows;
+}
+
+/* ============================ TRANSCRIPT IMPORT ============================ */
+function transcriptModalHTML(){
+  let inner;
+  if(UI.transcriptBusy){
+    inner='<div class="bulk-busy">Analyzing transcript &amp; matching answers with AI…<br>This can take longer for long transcripts.</div>';
+  }else if(UI.transcriptResult){
+    inner=transcriptPreviewHTML(UI.transcriptResult);
+  }else{
+    inner=(UI.transcriptError?'<div class="storage-warn" style="margin-bottom:12px">'+esc(UI.transcriptError)+'</div>':'')+
+      '<p class="editor-hint" style="margin-bottom:8px">Paste the transcript text (audio-to-text). The AI matches spoken answers to existing questions in this meeting, and flags any new questions it hears. Works best when you ask each question from the list, then answer it, one at a time.</p>'+
+      '<textarea id="transcriptText" class="bulk-ta" style="height:260px" placeholder="Paste the transcript here…">'+(UI.transcriptText?esc(UI.transcriptText):'')+'</textarea>'+
+      '<div class="modal-actions">'+
+        '<button class="btn primary tiny" data-action="transcript-run-ai">Analyze transcript (AI)</button>'+
+      '</div>';
+  }
+  return '<div class="modal-overlay">'+
+    '<div class="modal-card wide">'+
+      '<div class="modal-top">'+
+        '<div><div class="modal-kicker">Transcript import</div>'+
+        '<div class="modal-sub">'+esc(currentMeetingName())+' · answers are added as "AUTO TRANSCRIPT"</div></div>'+
+        '<button class="btn ghost tiny" data-action="close-transcript">✕ Close</button>'+
+      '</div>'+
+      inner+
+    '</div>'+
+  '</div>';
+}
+
+function transcriptPreviewHTML(res){
+  const mid=UI.currentMeetingId;
+  const validQids={}; meetingQuestions(mid).forEach(function(q){ validQids[q.id]=q; });
+  const answers=(res.answers||[]).filter(function(a){ return a && a.id && validQids[a.id] && a.answer && String(a.answer).trim(); });
+  const newQs=(res.newQuestions||[]).filter(function(nq){ return nq && nq.q && String(nq.q).trim(); });
+
+  let ansRows='';
+  answers.forEach(function(a,i){
+    const q=validQids[a.id];
+    ansRows+='<div class="bulk-row" style="align-items:flex-start;flex-direction:column;gap:6px">'+
+      '<div style="display:flex;gap:10px;align-items:flex-start;width:100%">'+
+        '<input type="checkbox" id="tr_ans_inc_'+i+'" checked style="margin-top:4px">'+
+        '<div style="flex:1">'+
+          '<div class="editor-hint" style="margin-bottom:3px">Q: '+esc(q.text)+'</div>'+
+          '<textarea id="tr_ans_text_'+i+'" class="result-editor-ta" style="min-height:52px">'+esc(a.answer)+'</textarea>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  });
+
+  const secs=meetingSections(mid);
+  let newRows='';
+  const seenNorms={};
+  newQs.forEach(function(nq,i){
+    const dup=findDuplicateInMeeting(mid,nq.q,null);
+    const norm=normalizeQ(nq.q);
+    const batchDup=!dup && seenNorms[norm];
+    const isDup=!!(dup||batchDup);
+    if(!isDup) seenNorms[norm]=true;
+    let opts=''; secs.forEach(function(s){ opts+='<option value="ex::'+s.id+'">'+esc(s.title)+'</option>'; });
+    opts+='<option value="new" selected>+ New section "FROM TRANSCRIPT"</option>';
+    let dupNote='';
+    if(dup){ const esec=STATE.sections.find(function(s){return s.id===dup.sectionId;}); dupNote='<div class="editor-hint" style="color:var(--rose);margin-top:3px">Already exists'+(esec?(' in "'+esc(esec.title)+'"'):'')+'</div>'; }
+    else if(batchDup){ dupNote='<div class="editor-hint" style="color:var(--rose);margin-top:3px">Duplicate within this transcript</div>'; }
+    const rowStyle='align-items:flex-start;flex-direction:column;gap:6px'+(isDup?';opacity:.55':'');
+    newRows+='<div class="bulk-row" style="'+rowStyle+'">'+
+      '<div style="display:flex;gap:10px;align-items:flex-start;width:100%">'+
+        '<input type="checkbox" id="tr_new_inc_'+i+'" '+(isDup?'':'checked')+' '+(isDup?'disabled':'')+' style="margin-top:4px">'+
+        '<div style="flex:1">'+
+          '<div class="bulk-q">'+esc(nq.q)+'</div>'+dupNote+
+          (nq.a?('<textarea id="tr_new_ans_'+i+'" class="result-editor-ta" style="min-height:46px;margin-top:6px" placeholder="Answer captured from transcript (optional, editable)">'+esc(nq.a)+'</textarea>'):'')+
+        '</div>'+
+        '<select id="tr_new_sec_'+i+'" '+(isDup?'disabled':'')+'>'+opts+'</select>'+
+      '</div>'+
+    '</div>';
+  });
+
+  return '<p class="editor-hint" style="margin:2px 0 10px">Found '+answers.length+' matched answer(s) and '+newQs.length+' new question(s).</p>'+
+    (answers.length?('<h3 style="font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:10px 0 6px">Matched answers</h3><div class="bulk-list">'+ansRows+'</div>'):'')+
+    (newQs.length?('<h3 style="font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:14px 0 6px">New questions heard in transcript</h3><div class="bulk-list">'+newRows+'</div>'):'')+
+    (!answers.length && !newQs.length ? '<p class="empty-hint">Nothing usable was detected in this transcript.</p>' : '')+
+    '<div class="modal-actions">'+
+      '<button class="btn primary tiny" data-action="transcript-confirm">Add to workspace</button>'+
+      '<button class="btn tiny" data-action="transcript-back">Back</button>'+
+    '</div>';
+}
+
+function collectTranscriptPlan(){
+  const res=UI.transcriptResult; if(!res) return {answers:[],newQuestions:[]};
+  const mid=UI.currentMeetingId;
+  const validQids={}; meetingQuestions(mid).forEach(function(q){ validQids[q.id]=q; });
+  const answersSrc=(res.answers||[]).filter(function(a){ return a&&a.id&&validQids[a.id]&&a.answer&&String(a.answer).trim(); });
+  const newSrc=(res.newQuestions||[]).filter(function(nq){ return nq&&nq.q&&String(nq.q).trim(); });
+
+  const answers=[];
+  answersSrc.forEach(function(a,i){
+    const inc=document.getElementById('tr_ans_inc_'+i);
+    if(!inc||!inc.checked) return;
+    const ta=document.getElementById('tr_ans_text_'+i);
+    const txt=(ta&&ta.value||'').trim();
+    if(!txt) return;
+    answers.push({ id:a.id, text:txt });
+  });
+
+  const newQuestions=[];
+  newSrc.forEach(function(nq,i){
+    const inc=document.getElementById('tr_new_inc_'+i);
+    if(!inc || !inc.checked || inc.disabled) return;
+    const sel=document.getElementById('tr_new_sec_'+i);
+    const target=sel?sel.value:'new';
+    const ansTa=document.getElementById('tr_new_ans_'+i);
+    const ansTxt=ansTa?(ansTa.value||'').trim():'';
+    newQuestions.push({ q:nq.q, target:target, answer:ansTxt });
+  });
+
+  return { answers:answers, newQuestions:newQuestions };
+}
+
+/* ============================ EVENTS ============================ */
+document.addEventListener('click', async function(e){
+  if(e.target.classList && e.target.classList.contains('modal-overlay')){ UI.exportOpen=false; UI.bulkOpen=false; UI.transcriptOpen=false; UI.pwModal=null; UI.pwModalError=null; UI.confirmModal=null; UI.manageAccessModal=null; UI.inputModal=null; UI.infoModal=null; render(); return; }
+  const t=e.target.closest('[data-action]');
+  if(!t) return;
+  const action=t.getAttribute('data-action');
+  const id=t.getAttribute('data-id');
+  if(STATE && currentUser() && !canWrite() && VIEWER_BLOCKED.indexOf(action)!==-1){ toast('View-only account'); return; }
+
+  switch(action){
+    case 'login':{
+      const u=STATE.users.find(function(x){return x.id===id;});
+      if(u && (u.isAdmin||u.isSuperAdmin) && u.pinHash){
+        const remembered=await isAdminSessionValid(id);
+        if(remembered){ UI.currentUserId=id; UI.currentMeetingId=null; render(); toast('Welcome back, '+u.name); break; }
+        UI.pwModal={mode:'login',userId:id}; UI.pwModalError=null; render(); break;
+      }
+      UI.currentUserId=id; UI.currentMeetingId=null; render();
+      if(u && (u.isAdmin||u.isSuperAdmin) && !u.pinHash){ toast('Tip: set a password in Users & Access'); }
+      break;
+    }
+    case 'forget-sessions': await forgetAllAdminSessions(); toast('Cleared — admins will need their password again'); break;
+
+    case 'logout': UI.currentUserId=null; UI.currentProjectId=null; UI.currentMeetingId=null; UI.adminOpen=false; UI.exportOpen=false; UI.bulkOpen=false; UI.usersOpen=false; UI.dashboardOpen=false; render(); break;
+
+    case 'refresh':{ const fresh=await storeGet(); if(fresh){ STATE=fresh; render(); toast('Refreshed'); } else toast('Nothing to refresh'); break; }
+    case 'toggle-admin': UI.adminOpen=!UI.adminOpen; render(); break;
+    case 'toggle-users': if(!isAdmin()){ toast('Admins only'); break; } UI.usersOpen=!UI.usersOpen; render(); break;
+    case 'toggle-dashboard': UI.dashboardOpen=!UI.dashboardOpen; render(); break;
+    case 'toggle-bulk-mode':{
+      if(!isAdmin()){ toast('Admins only'); break; }
+      UI.bulkStatusMode=!UI.bulkStatusMode; UI.bulkSelected={}; UI.bulkStatusText='';
+      render(); break;
+    }
+    case 'toggle-bulk-select':{
+      if(UI.bulkSelected[id]) delete UI.bulkSelected[id]; else UI.bulkSelected[id]=true;
+      render(); break;
+    }
+    case 'bulk-select-all':{
+      const qs=meetingQuestions(UI.currentMeetingId).filter(function(q){return UI.filter==='all'||q.status===UI.filter;});
+      qs.forEach(function(q){ UI.bulkSelected[q.id]=true; });
+      render(); break;
+    }
+    case 'bulk-select-none': UI.bulkSelected={}; render(); break;
+    case 'bulk-status-solve':{
+      if(!isAdmin()){ toast('Admins only'); break; }
+      const ids=Object.keys(UI.bulkSelected).filter(function(k){return UI.bulkSelected[k];});
+      if(!ids.length){ toast('Select at least one question'); break; }
+      const ta=document.getElementById('bulkStatusResultText');
+      const txt=(ta&&ta.value||'').trim();
+      if(!txt){ toast('Write the shared result text first'); break; }
+      const meId=UI.currentUserId;
+      await mutate(function(d){
+        ids.forEach(function(qid){
+          const q=d.questions.find(function(x){return x.id===qid;});
+          if(q){ q.result=txt; q.resultFromAnswerId=null; q.resultBy=meId; q.resultAt=new Date().toISOString(); syncStatus(d,q); }
+        });
+      });
+      UI.bulkSelected={}; UI.bulkStatusText='';
+      toast(ids.length+' question(s) marked as Solved'); break;
+    }
+    case 'bulk-status-clear':{
+      if(!isAdmin()){ toast('Admins only'); break; }
+      const ids=Object.keys(UI.bulkSelected).filter(function(k){return UI.bulkSelected[k];});
+      if(!ids.length){ toast('Select at least one question'); break; }
+      UI.confirmModal={ kind:'bulk-clear-results', ids:ids, confirmLabel:'Clear results',
+        message:'Clear the result for '+ids.length+' selected question(s)? Their status will be recalculated automatically.' };
+      render(); break;
+    }
+    case 'filter': UI.filter=t.getAttribute('data-v'); render(); break;
+    case 'toggle-section': UI.collapsed[id]=!UI.collapsed[id]; render(); break;
+    case 'toggle-solved-block':{
+      const cur=UI.solvedCollapsed[id]!==false;
+      UI.solvedCollapsed[id]=!cur;
+      render(); break;
+    }
+    case 'toggle-addq': UI.addQOpen[id]=!UI.addQOpen[id]; render(); break;
+
+    case 'open-overall':{ const ov=projectMeetings(UI.currentProjectId).find(function(m){return m.isOverall;}); UI.currentMeetingId=ov?ov.id:null; UI.filter='all'; UI.bulkStatusMode=false; UI.bulkSelected={}; render(); break; }
+    case 'open-meeting': UI.currentMeetingId=id; UI.filter='all'; UI.bulkStatusMode=false; UI.bulkSelected={}; render(); break;
+    case 'goto-menu': UI.currentMeetingId=null; UI.exportOpen=false; UI.bulkOpen=false; UI.bulkStatusMode=false; UI.bulkSelected={}; render(); break;
+    case 'goto-projects':{
+      UI.currentProjectId=null; UI.currentMeetingId=null; UI.exportOpen=false; UI.bulkOpen=false;
+      UI.bulkStatusMode=false; UI.bulkSelected={}; UI.dashboardOpen=false; UI.usersOpen=false; UI.transcriptOpen=false;
+      render(); break;
+    }
+    case 'create-meeting':{
+      const inp=document.getElementById('newMeetingName');
+      const nm=(inp&&inp.value||'').trim();
+      if(!nm){ toast('Enter a meeting name'); break; }
+      const pid=UI.currentProjectId;
+      const newId=uid('mtg'); UI.currentMeetingId=newId; UI.filter='all';
+      await mutate(function(d){ d.meetings.push({id:newId,projectId:pid,name:nm,isOverall:false,createdAt:new Date().toISOString()}); });
+      toast('Meeting created'); break;
+    }
+    case 'del-meeting':{
+      if(!isAdmin()){ toast('Admins only'); break; }
+      const m=STATE.meetings.find(function(x){return x.id===id;});
+      if(m&&m.isOverall){ toast('The overall list cannot be deleted'); break; }
+      const cnt=STATE.questions.filter(function(q){return q.meetingId===id;}).length;
+      UI.confirmModal={ kind:'del-meeting', id:id, confirmLabel:'Delete meeting',
+        message:'Delete meeting "'+(m?m.name:'')+'" with its '+cnt+' question(s) and all answers? This cannot be undone.' };
+      render(); break;
+    }
+
+    case 'open-project': UI.currentProjectId=id; UI.currentMeetingId=null; render(); break;
+    case 'create-project':{
+      if(!isSuperAdmin()){ toast('Super admins only'); break; }
+      const inp=document.getElementById('newProjectName');
+      const nm=(inp&&inp.value||'').trim();
+      if(!nm){ toast('Enter a project name'); break; }
+      const pid=uid('prj'); const ovId=uid('mtg');
+      await mutate(function(d){
+        if(!Array.isArray(d.projects)) d.projects=[];
+        d.projects.push({id:pid,name:nm,createdAt:new Date().toISOString(),memberIds:[]});
+        d.meetings.push({id:ovId,projectId:pid,name:'Overall questions',isOverall:true,createdAt:new Date().toISOString()});
+      });
+      UI.currentProjectId=pid; UI.currentMeetingId=null;
+      toast('Project created'); render(); break;
+    }
+    case 'del-project':{
+      if(!isSuperAdmin()){ toast('Super admins only'); break; }
+      const p=(STATE.projects||[]).find(function(x){return x.id===id;});
+      const mCount=STATE.meetings.filter(function(m){return m.projectId===id;}).length;
+      UI.confirmModal={ kind:'del-project', id:id, confirmLabel:'Delete project',
+        message:'Delete project "'+(p?p.name:'')+'" and all its '+mCount+' workspace(s), sections, questions and answers? This cannot be undone.' };
+      render(); break;
+    }
+    case 'open-manage-access':{
+      if(!isSuperAdmin()){ toast('Super admins only'); break; }
+      UI.manageAccessModal={projectId:id}; render(); break;
+    }
+    case 'close-manage-access': UI.manageAccessModal=null; render(); break;
+    case 'toggle-project-member':{
+      if(!isSuperAdmin()){ toast('Super admins only'); break; }
+      const pid=id; const targetUid=t.getAttribute('data-uid');
+      await mutate(function(d){
+        const p=(d.projects||[]).find(function(x){return x.id===pid;});
+        if(!p) return;
+        if(!Array.isArray(p.memberIds)) p.memberIds=[];
+        const idx=p.memberIds.indexOf(targetUid);
+        if(idx===-1) p.memberIds.push(targetUid); else p.memberIds.splice(idx,1);
+      });
+      render(); break;
+    }
+    case 'toggle-viewer':{
+      if(!isAdmin()){ toast('Admins only'); break; }
+      const target=STATE.users.find(function(x){return x.id===id;});
+      if(!target || target.isAdmin || target.isSuperAdmin){ break; }
+      const makeViewer=!target.isViewer;
+      await mutate(function(d){ const u=d.users.find(function(x){return x.id===id;}); if(u) u.isViewer=makeViewer; });
+      toast(target.name+' is now a '+(makeViewer?'viewer (read-only)':'contributor')); break;
+    }
+    case 'toggle-superadmin':{
+      if(!isSuperAdmin()){ toast('Super admins only'); break; }
+      const target=STATE.users.find(function(x){return x.id===id;});
+      if(!target){ break; }
+      if(!target.isSuperAdmin){
+        await mutate(function(d){ const u=d.users.find(function(x){return x.id===id;}); if(u){ u.isSuperAdmin=true; u.isAdmin=true; u.isViewer=false; } });
+        toast('Super admin granted for '+target.name); break;
+      }
+      const superCount=STATE.users.filter(function(u){return u.isSuperAdmin;}).length;
+      if(superCount<=1){ toast('Keep at least one super admin'); break; }
+      if(target.id===UI.currentUserId){
+        UI.confirmModal={ kind:'revoke-own-super', id:id, confirmLabel:'Revoke my super admin',
+          message:'Revoke your own super admin status? You will keep normal admin rights but won\'t be able to create projects or manage project access anymore.' };
+        render(); break;
+      }
+      await mutate(function(d){ const u=d.users.find(function(x){return x.id===id;}); if(u) u.isSuperAdmin=false; });
+      toast('Super admin revoked for '+target.name); break;
+    }
+
+    case 'add-user':{
+      const nm=(document.getElementById('newUserName').value||'').trim();
+      const admEl=document.getElementById('newUserAdmin');
+      const superEl=document.getElementById('newUserSuper');
+      const adm=admEl?admEl.checked:false;
+      const sup=(superEl && isSuperAdmin())?superEl.checked:false;
+      const vwrEl=document.getElementById('newUserViewer'); const vwr=vwrEl?vwrEl.checked:false;
+      if(!nm){ toast('Enter a name'); break; }
+      if(adm||sup){
+        UI.pwModal={mode:'newadmin', name:nm, makeAdmin:(adm||sup), makeSuper:sup}; UI.pwModalError=null; render(); break;
+      }
+      await mutate(function(d){ d.users.push({id:uid('usr'),name:nm,isAdmin:false,isSuperAdmin:false,isViewer:vwr,pinHash:null}); });
+      toast('User added'); break;
+    }
+    case 'del-user':{
+      const u=STATE.users.find(function(x){return x.id===id;});
+      if(STATE.users.length<=1){ toast('Keep at least one user'); break; }
+      if(u && u.isSuperAdmin){
+        const superCount=STATE.users.filter(function(x){return x.isSuperAdmin;}).length;
+        if(superCount<=1){ toast('Keep at least one super admin — revoke their status first if you want to remove them'); break; }
+      }
+      UI.confirmModal={ kind:'del-user', id:id, confirmLabel:'Remove user',
+        message:'Remove user "'+(u?u.name:'')+'"? Their answers stay but show as their name.' };
+      render(); break;
+    }
+
+    case 'set-password':{
+      if(id!==UI.currentUserId){ toast('You can only set your own password'); break; }
+      const target=STATE.users.find(function(x){return x.id===id;});
+      if(!target || !(target.isAdmin||target.isSuperAdmin)){ toast('Only admins have a password'); break; }
+      UI.pwModal={mode:'set',userId:id}; UI.pwModalError=null; render(); break;
+    }
+    case 'reset-password':{
+      if(!isAdmin()){ toast('Admins only'); break; }
+      const target=STATE.users.find(function(x){return x.id===id;});
+      if(!target){ break; }
+      if(target.id===UI.currentUserId){ toast('Use "Change my password" for your own account'); break; }
+      UI.pwModal={mode:'reset',userId:id}; UI.pwModalError=null; render(); break;
+    }
+    case 'pw-cancel': UI.pwModal=null; UI.pwModalError=null; render(); break;
+
+    case 'confirm-no': UI.confirmModal=null; render(); break;
+    case 'confirm-yes':{
+      const cm=UI.confirmModal;
+      UI.confirmModal=null;
+      if(!cm) break;
+      const cid=cm.id;
+      if(cm.kind==='del-meeting'){
+        await mutate(function(d){
+          const qids=d.questions.filter(function(q){return q.meetingId===cid;}).map(function(q){return q.id;});
+          d.questions=d.questions.filter(function(q){return q.meetingId!==cid;});
+          d.answers=d.answers.filter(function(a){return qids.indexOf(a.questionId)===-1;});
+          d.sections=d.sections.filter(function(s){return s.meetingId!==cid;});
+          d.meetings=d.meetings.filter(function(x){return x.id!==cid;});
+        });
+        if(UI.currentMeetingId===cid) UI.currentMeetingId=null;
+        toast('Meeting deleted'); render(); break;
+      }
+      if(cm.kind==='del-user'){
+        await mutate(function(d){ d.users=d.users.filter(function(x){return x.id!==cid;}); });
+        if(UI.currentUserId===cid) UI.currentUserId=null;
+        toast('User removed'); render(); break;
+      }
+      if(cm.kind==='del-section'){
+        await mutate(function(d){
+          const qids=d.questions.filter(function(q){return q.sectionId===cid;}).map(function(q){return q.id;});
+          d.questions=d.questions.filter(function(q){return q.sectionId!==cid;});
+          d.answers=d.answers.filter(function(a){return qids.indexOf(a.questionId)===-1;});
+          d.sections=d.sections.filter(function(s){return s.id!==cid;});
+        });
+        toast('Section deleted'); render(); break;
+      }
+      if(cm.kind==='del-question'){
+        await mutate(function(d){ d.questions=d.questions.filter(function(q){return q.id!==cid;}); d.answers=d.answers.filter(function(a){return a.questionId!==cid;}); });
+        toast('Question deleted'); render(); break;
+      }
+      if(cm.kind==='clear-result'){
+        await mutate(function(d){ const q=d.questions.find(function(x){return x.id===cid;}); if(q){ q.result=null; q.resultFromAnswerId=null; q.resultBy=null; q.resultAt=null; syncStatus(d,q); } });
+        UI.resultEditOpen[cid]=false; toast('Result cleared'); render(); break;
+      }
+      if(cm.kind==='bulk-clear-results'){
+        const ids=cm.ids||[];
+        await mutate(function(d){ ids.forEach(function(qid){ const q=d.questions.find(function(x){return x.id===qid;}); if(q){ q.result=null; q.resultFromAnswerId=null; q.resultBy=null; q.resultAt=null; syncStatus(d,q); } }); });
+        UI.bulkSelected={};
+        toast(ids.length+' result(s) cleared'); render(); break;
+      }
+      if(cm.kind==='del-project'){
+        await mutate(function(d){
+          const mids=d.meetings.filter(function(m){return m.projectId===cid;}).map(function(m){return m.id;});
+          const qids=d.questions.filter(function(q){return mids.indexOf(q.meetingId)!==-1;}).map(function(q){return q.id;});
+          d.answers=d.answers.filter(function(a){return qids.indexOf(a.questionId)===-1;});
+          d.questions=d.questions.filter(function(q){return mids.indexOf(q.meetingId)===-1;});
+          d.sections=d.sections.filter(function(s){return mids.indexOf(s.meetingId)===-1;});
+          d.meetings=d.meetings.filter(function(m){return m.projectId!==cid;});
+          d.projects=(d.projects||[]).filter(function(p){return p.id!==cid;});
+        });
+        if(UI.currentProjectId===cid){ UI.currentProjectId=null; UI.currentMeetingId=null; }
+        toast('Project deleted'); render(); break;
+      }
+      if(cm.kind==='revoke-own-super'){
+        await mutate(function(d){ const u=d.users.find(function(x){return x.id===cid;}); if(u) u.isSuperAdmin=false; });
+        toast('Your super admin status was revoked'); render(); break;
+      }
+      render(); break;
+    }
+
+    case 'pw-submit-login':{
+      const target=STATE.users.find(function(x){return x.id===id;});
+      const inp=document.getElementById('pwInput1');
+      const pwd=(inp&&inp.value)||'';
+      if(!pwd){ UI.pwModalError='Enter your password.'; render(); break; }
+      try{
+        const hash=await sha256Hex(pwd);
+        if(!target || hash!==target.pinHash){ UI.pwModalError='Incorrect password.'; render(); break; }
+        await rememberAdminSession(target.id);
+        UI.pwModal=null; UI.pwModalError=null;
+        UI.currentUserId=target.id; UI.currentMeetingId=null; render();
+        toast('Logged in — remembered for 24 hours on this device');
+      }catch(e){ UI.pwModalError='Could not verify password: '+(e&&e.message?e.message:'unknown error'); render(); }
+      break;
+    }
+    case 'pw-submit-set':{
+      const target=STATE.users.find(function(x){return x.id===id;});
+      if(!target || target.id!==UI.currentUserId){ UI.pwModalError='You can only set your own password.'; render(); break; }
+      try{
+        if(target.pinHash){
+          const curEl=document.getElementById('pwCurrent');
+          const cur=(curEl&&curEl.value)||'';
+          if(!cur){ UI.pwModalError='Enter your current password.'; render(); break; }
+          const curHash=await sha256Hex(cur);
+          if(curHash!==target.pinHash){ UI.pwModalError='Current password is incorrect.'; render(); break; }
+        }
+        const p1El=document.getElementById('pwNew'), p2El=document.getElementById('pwConfirm');
+        const p1=(p1El&&p1El.value)||'', p2=(p2El&&p2El.value)||'';
+        if(!p1 || p1.length<4){ UI.pwModalError='New password must be at least 4 characters.'; render(); break; }
+        if(p1!==p2){ UI.pwModalError='Passwords do not match.'; render(); break; }
+        const hash=await sha256Hex(p1);
+        await mutate(function(d){ const u=d.users.find(function(x){return x.id===id;}); if(u) u.pinHash=hash; });
+        await forgetAdminSession(id);
+        await rememberAdminSession(id);
+        UI.pwModal=null; UI.pwModalError=null;
+        toast('Password set'); render();
+      }catch(e){ UI.pwModalError='Could not save password: '+(e&&e.message?e.message:'unknown error'); render(); }
+      break;
+    }
+    case 'pw-submit-reset':{
+      if(!isAdmin()){ UI.pwModal=null; render(); break; }
+      const target=STATE.users.find(function(x){return x.id===id;});
+      await mutate(function(d){ const u=d.users.find(function(x){return x.id===id;}); if(u) u.pinHash=null; });
+      await forgetAdminSession(id);
+      UI.pwModal=null; UI.pwModalError=null;
+      toast('Password reset for '+(target?target.name:'')); render();
+      break;
+    }
+    case 'pw-submit-newadmin':{
+      const st=UI.pwModal;
+      if(!st || st.mode!=='newadmin'){ break; }
+      try{
+        const p1El=document.getElementById('pwNew'), p2El=document.getElementById('pwConfirm');
+        const p1=(p1El&&p1El.value)||'', p2=(p2El&&p2El.value)||'';
+        if(!p1 || p1.length<4){ UI.pwModalError='Password must be at least 4 characters.'; render(); break; }
+        if(p1!==p2){ UI.pwModalError='Passwords do not match.'; render(); break; }
+        const hash=await sha256Hex(p1);
+        await mutate(function(d){ d.users.push({id:uid('usr'),name:st.name,isAdmin:!!st.makeAdmin,isSuperAdmin:!!st.makeSuper,pinHash:hash}); });
+        UI.pwModal=null; UI.pwModalError=null;
+        toast((st.makeSuper?'Super admin':'Admin')+' user created'); render();
+      }catch(e){ UI.pwModalError='Could not create user: '+(e&&e.message?e.message:'unknown error'); render(); }
+      break;
+    }
+
+    case 'add-section-admin':
+    case 'add-section-main':{
+      const fieldId=action==='add-section-admin'?'newSectionTitle':'newSectionTitleMain';
+      const title=(document.getElementById(fieldId).value||'').trim();
+      if(!title){ toast('Enter a section title'); break; }
+      const mid=UI.currentMeetingId;
+      await mutate(function(d){ const mo=d.sections.filter(function(s){return s.meetingId===mid;}).reduce(function(m,s){return Math.max(m,s.order);},-1); d.sections.push({id:uid('sec'),meetingId:mid,title:title.toUpperCase(),order:mo+1}); });
+      toast('Section added'); break;
+    }
+    case 'rename-section':{
+      const sec=STATE.sections.find(function(s){return s.id===id;});
+      UI.inputModal={kind:'rename-section',id:id,title:'Rename section',value:sec?sec.title:'',multiline:false};
+      render(); break;
+    }
+    case 'del-section':{
+      const sec=STATE.sections.find(function(s){return s.id===id;});
+      const cnt=STATE.questions.filter(function(q){return q.sectionId===id;}).length;
+      UI.confirmModal={ kind:'del-section', id:id, confirmLabel:'Delete section',
+        message:'Delete section "'+(sec?sec.title:'')+'" and its '+cnt+' question(s) + all answers? This cannot be undone.' };
+      render(); break;
+    }
+
+    case 'add-question':{
+      const ta=document.getElementById('addqText_'+id);
+      const txt=(ta&&ta.value||'').trim();
+      if(!txt){ toast('Type a question'); break; }
+      const mid=UI.currentMeetingId;
+      const dup=findDuplicateInMeeting(mid,txt,null);
+      if(dup){ UI.infoModal={title:'Already exists',message:duplicateNotice(dup)}; render(); break; }
+      await mutate(function(d){ const mo=d.questions.filter(function(q){return q.sectionId===id;}).reduce(function(m,q){return Math.max(m,q.order);},-1); d.questions.push({id:uid('q'),meetingId:mid,sectionId:id,text:txt,status:'open',order:mo+1,result:null,resultFromAnswerId:null,resultBy:null,resultAt:null}); });
+      UI.addQOpen[id]=false; toast('Question added'); break;
+    }
+    case 'edit-question':{
+      const q=STATE.questions.find(function(x){return x.id===id;});
+      UI.inputModal={kind:'edit-question',id:id,title:'Edit question',value:q?q.text:'',multiline:true};
+      render(); break;
+    }
+    case 'del-question':{
+      if(!isAdmin()){ toast('Admins only'); break; }
+      UI.confirmModal={ kind:'del-question', id:id, confirmLabel:'Delete question',
+        message:'Delete this question and all its answers? This cannot be undone.' };
+      render(); break;
+    }
+
+    case 'save-answer':{
+      const ta=document.getElementById('ans_'+id);
+      const txt=(ta&&ta.value||'').trim();
+      const meId=UI.currentUserId;
+      if(!txt){ toast('Write something first'); break; }
+      await mutate(function(d){
+        let a=d.answers.find(function(x){return x.questionId===id&&x.userId===meId;});
+        if(a){ a.text=txt; a.updatedAt=new Date().toISOString(); }
+        else { d.answers.push({id:uid('ans'),questionId:id,userId:meId,text:txt,updatedAt:new Date().toISOString()}); }
+        const q=d.questions.find(function(x){return x.id===id;});
+        syncStatus(d,q);
+      });
+      toast('Answer saved'); break;
+    }
+
+    case 'set-result-open': if(!isAdmin()){ toast('Admins only'); break; } UI.resultEditOpen[id]=!UI.resultEditOpen[id]; render(); break;
+    case 'save-result':{
+      if(!isAdmin()){ toast('Admins only'); break; }
+      const ta=document.getElementById('result_'+id);
+      const txt=(ta&&ta.value||'').trim();
+      if(!txt){ toast('Write a result first'); break; }
+      await mutate(function(d){ const q=d.questions.find(function(x){return x.id===id;}); if(q){ q.result=txt; q.resultFromAnswerId=null; q.resultBy=UI.currentUserId; q.resultAt=new Date().toISOString(); syncStatus(d,q); } });
+      UI.resultEditOpen[id]=false; delete UI.aiSuggestion[id]; toast('Result saved · marked Solved'); break;
+    }
+    case 'clear-result':{
+      if(!isAdmin()){ toast('Admins only'); break; }
+      UI.confirmModal={ kind:'clear-result', id:id, confirmLabel:'Clear result',
+        message:'Clear the result for this question? Status moves back to In discussion.' };
+      render(); break;
+    }
+    case 'mark-result':{
+      if(!isAdmin()){ toast('Admins only'); break; }
+      const aid=t.getAttribute('data-aid');
+      await mutate(function(d){ const q=d.questions.find(function(x){return x.id===id;}); const a=d.answers.find(function(x){return x.id===aid;}); if(q&&a){ q.result=a.text; q.resultFromAnswerId=a.id; q.resultBy=UI.currentUserId; q.resultAt=new Date().toISOString(); syncStatus(d,q); } });
+      UI.resultEditOpen[id]=false; delete UI.aiSuggestion[id]; toast('Answer marked as result · Solved'); break;
+    }
+
+    case 'ai-suggest-result':{
+      if(!isAdmin()){ toast('Admins only'); break; }
+      const q=STATE.questions.find(function(x){return x.id===id;});
+      if(!q){ break; }
+      const ansArr=STATE.answers.filter(function(a){return a.questionId===id;}).map(function(a){
+        const u=STATE.users.find(function(x){return x.id===a.userId;});
+        return { author:u?u.name:'Unknown', text:a.text };
+      });
+      if(ansArr.length===0){ toast('No answers yet to analyze'); break; }
+      UI.aiSuggestBusy[id]=true; UI.aiSuggestError[id]=null; render();
+      try{
+        const res=await aiSuggestResult(q.text, ansArr);
+        if(!res || typeof res.suggestion!=='string'){ throw new Error('unexpected response shape'); }
+        UI.aiSuggestion[id]=res;
+        UI.aiSuggestBusy[id]=false;
+        UI.resultEditOpen[id]=true;
+        render();
+      }catch(err){
+        UI.aiSuggestBusy[id]=false;
+        UI.aiSuggestError[id]='AI suggestion failed: '+((err&&err.message)?err.message:'unknown');
+        render();
+      }
+      break;
+    }
+
+    case 'input-cancel': UI.inputModal=null; render(); break;
+    case 'info-close': UI.infoModal=null; render(); break;
+    case 'input-submit':{
+      const st=UI.inputModal; if(!st) break;
+      const f=document.getElementById('inputModalField');
+      const v=((f&&f.value)||'').trim();
+      if(!v){ toast('This cannot be empty'); break; }
+      if(st.kind==='rename-section'){
+        UI.inputModal=null;
+        await mutate(function(d){ const s=d.sections.find(function(x){return x.id===st.id;}); if(s) s.title=v; });
+        toast('Renamed');
+      }else if(st.kind==='edit-question'){
+        const q=STATE.questions.find(function(x){return x.id===st.id;});
+        const dup=q?findDuplicateInMeeting(q.meetingId,v,st.id):null;
+        UI.inputModal=null;
+        if(dup){ UI.infoModal={title:'Already exists',message:duplicateNotice(dup)}; render(); break; }
+        await mutate(function(d){ const x=d.questions.find(function(y){return y.id===st.id;}); if(x) x.text=v; });
+        toast('Question updated');
+      }
+      break;
+    }
+    case 'open-export': UI.exportOpen=true; UI.exportFormat=UI.exportFormat||'md'; render(); break;
+    case 'close-export': UI.exportOpen=false; render(); break;
+    case 'export-format': UI.exportFormat=t.getAttribute('data-v'); render(); break;
+    case 'export-copy': copyText(buildExport(UI.exportFormat||'md')); break;
+    case 'export-download':{
+      const fmt=UI.exportFormat||'md';
+      const base='consulting-kings-'+slug(currentMeetingName());
+      const map={ md:['text/markdown',base+'.md'], csv:['text/csv',base+'.csv'], json:['application/json',base+'.json'] };
+      const m=map[fmt]||map.md; downloadText(m[1],m[0],buildExport(fmt)); break;
+    }
+
+    case 'open-bulk': UI.bulkOpen=true; UI.bulkResult=null; UI.bulkError=null; UI.bulkText=''; UI.bulkBusy=false; render(); break;
+    case 'close-bulk': UI.bulkOpen=false; render(); break;
+    case 'bulk-back': UI.bulkResult=null; render(); break;
+    case 'bulk-run-ai':{
+      const ta=document.getElementById('bulkText');
+      const raw=(ta&&ta.value||'').trim();
+      if(!raw){ toast('Paste some questions first'); break; }
+      UI.bulkText=raw; UI.bulkBusy=true; UI.bulkError=null; UI.bulkResult=null; render();
+      try{
+        const titles=meetingSections(UI.currentMeetingId).map(function(s){return s.title;});
+        const res=await aiSortQuestions(raw,titles);
+        if(!res||!Array.isArray(res.items)||!Array.isArray(res.sections)) throw new Error('unexpected response shape');
+        UI.bulkResult=res; UI.bulkBusy=false; render();
+      }catch(err){
+        UI.bulkBusy=false; UI.bulkError='AI sorting failed: '+((err&&err.message)?err.message:'unknown')+'. You can add the questions as a plain list instead (button below).'; render();
+      }
+      break;
+    }
+    case 'bulk-add-plain':{
+      const ta=document.getElementById('bulkText');
+      const raw=(ta&&ta.value||'').trim();
+      if(!raw){ toast('Paste some questions first'); break; }
+      const sel=document.getElementById('bulkPlainSection');
+      const target=sel?sel.value:'new';
+      const lines=raw.split(/\n+/).map(function(l){return l.replace(/^[\s\-\*\u2022\d\.\)]+/,'').trim();}).filter(Boolean);
+      if(lines.length===0){ toast('No lines found'); break; }
+      const mid=UI.currentMeetingId;
+      const seenNorms={};
+      const toAdd=[]; const skipped=[];
+      lines.forEach(function(line){
+        const norm=normalizeQ(line);
+        const existingDup=findDuplicateInMeeting(mid,line,null);
+        if(existingDup){ skipped.push(line+'  →  already exists'); return; }
+        if(seenNorms[norm]){ skipped.push(line+'  →  duplicate within this paste'); return; }
+        seenNorms[norm]=true;
+        toAdd.push(line);
+      });
+      if(toAdd.length===0){ UI.infoModal={title:'Nothing added',message:'All '+lines.length+' line(s) already exist or are duplicates within your paste:\n\n'+skipped.join('\n')}; render(); break; }
+      await mutate(function(d){
+        let sid=null;
+        if(target.indexOf('ex::')===0) sid=target.slice(4);
+        if(!sid || !d.sections.find(function(s){return s.id===sid&&s.meetingId===mid;})){
+          const mo=d.sections.filter(function(s){return s.meetingId===mid;}).reduce(function(m,s){return Math.max(m,s.order);},-1);
+          sid=uid('sec'); d.sections.push({id:sid,meetingId:mid,title:'IMPORTED QUESTIONS',order:mo+1});
+        }
+        toAdd.forEach(function(line){ const mq=d.questions.filter(function(q){return q.sectionId===sid;}).reduce(function(m,q){return Math.max(m,q.order);},-1); d.questions.push({id:uid('q'),meetingId:mid,sectionId:sid,text:line,status:'open',order:mq+1,result:null,resultFromAnswerId:null,resultBy:null,resultAt:null}); });
+      });
+      UI.bulkOpen=false; UI.bulkResult=null;
+      if(skipped.length){ toast(toAdd.length+' added, '+skipped.length+' skipped as duplicate'); UI.infoModal={title:'Duplicates skipped',message:'Added '+toAdd.length+' question(s).\n\nSkipped '+skipped.length+' duplicate(s):\n\n'+skipped.join('\n')}; render(); }
+      else{ toast(toAdd.length+' question'+(toAdd.length!==1?'s':'')+' added'); }
+      break;
+    }
+    case 'bulk-confirm':{
+      const rows=collectBulkPlan();
+      if(!rows.length){ toast('Nothing selected'); break; }
+      const mid=UI.currentMeetingId;
+      let addedCount=0;
+      const lateSkipped=[];
+      await mutate(function(d){
+        const existing={}; d.sections.filter(function(s){return s.meetingId===mid;}).forEach(function(s){ existing[s.title.toLowerCase()]=s.id; });
+        const made={};
+        function ensure(name){
+          const key=String(name).toLowerCase();
+          if(existing[key]) return existing[key];
+          if(made[key]) return made[key];
+          const mo=d.sections.filter(function(s){return s.meetingId===mid;}).reduce(function(m,s){return Math.max(m,s.order);},-1);
+          const sid=uid('sec'); d.sections.push({id:sid,meetingId:mid,title:String(name).toUpperCase(),order:mo+1});
+          made[key]=sid; existing[key]=sid; return sid;
+        }
+        const seenNorms={};
+        rows.forEach(function(row){
+          const norm=normalizeQ(row.q);
+          const dupNow=d.questions.find(function(q){ return q.meetingId===mid && normalizeQ(q.text)===norm; });
+          if(dupNow || seenNorms[norm]){ lateSkipped.push(row.q); return; }
+          seenNorms[norm]=true;
+          let sid;
+          if(row.target.indexOf('ex::')===0) sid=row.target.slice(4);
+          else if(row.target.indexOf('new::')===0) sid=ensure(row.target.slice(5));
+          else sid=ensure('IMPORTED QUESTIONS');
+          if(!d.sections.find(function(s){return s.id===sid&&s.meetingId===mid;})) sid=ensure('IMPORTED QUESTIONS');
+          const mq=d.questions.filter(function(q){return q.sectionId===sid;}).reduce(function(m,q){return Math.max(m,q.order);},-1);
+          d.questions.push({id:uid('q'),meetingId:mid,sectionId:sid,text:row.q,status:'open',order:mq+1,result:null,resultFromAnswerId:null,resultBy:null,resultAt:null});
+          addedCount++;
+        });
+      });
+      UI.bulkOpen=false; UI.bulkResult=null; UI.bulkError=null;
+      if(lateSkipped.length){ toast(addedCount+' added, '+lateSkipped.length+' skipped as duplicate'); UI.infoModal={title:'Duplicates skipped',message:'Added '+addedCount+' question(s).\n\nSkipped '+lateSkipped.length+' duplicate(s) that already existed:\n\n'+lateSkipped.join('\n')}; render(); }
+      else{ toast(addedCount+' question'+(addedCount!==1?'s':'')+' added'); }
+      break;
+    }
+
+    case 'open-transcript':{
+      if(!isAdmin()){ toast('Admins only'); break; }
+      UI.transcriptOpen=true; UI.transcriptResult=null; UI.transcriptError=null; UI.transcriptText=''; UI.transcriptBusy=false; render(); break;
+    }
+    case 'close-transcript': UI.transcriptOpen=false; render(); break;
+    case 'transcript-back': UI.transcriptResult=null; render(); break;
+    case 'transcript-run-ai':{
+      const ta=document.getElementById('transcriptText');
+      const raw=(ta&&ta.value||'').trim();
+      if(!raw){ toast('Paste a transcript first'); break; }
+      UI.transcriptText=raw; UI.transcriptBusy=true; UI.transcriptError=null; UI.transcriptResult=null; render();
+      try{
+        const qList=meetingQuestions(UI.currentMeetingId).map(function(q){ return {id:q.id, text:q.text}; });
+        const res=await aiAnalyzeTranscript(raw, qList);
+        if(!res || !Array.isArray(res.answers) || !Array.isArray(res.newQuestions)) throw new Error('unexpected response shape');
+        UI.transcriptResult=res; UI.transcriptBusy=false; render();
+      }catch(err){
+        UI.transcriptBusy=false; UI.transcriptError='Transcript analysis failed: '+((err&&err.message)?err.message:'unknown'); render();
+      }
+      break;
+    }
+    case 'transcript-confirm':{
+      const plan=collectTranscriptPlan();
+      if(!plan.answers.length && !plan.newQuestions.length){ toast('Nothing selected'); break; }
+      const mid=UI.currentMeetingId;
+      let answeredCount=0, createdCount=0;
+      await mutate(function(d){
+        const autoId=ensureAutoTranscriptUser(d);
+        plan.answers.forEach(function(item){
+          const q=d.questions.find(function(x){return x.id===item.id;});
+          if(!q) return;
+          let a=d.answers.find(function(x){return x.questionId===item.id && x.userId===autoId;});
+          if(a){ a.text=item.text; a.updatedAt=new Date().toISOString(); }
+          else{ d.answers.push({id:uid('ans'),questionId:item.id,userId:autoId,text:item.text,updatedAt:new Date().toISOString()}); }
+          syncStatus(d,q);
+          answeredCount++;
+        });
+        const existingSecByTitle={}; d.sections.filter(function(s){return s.meetingId===mid;}).forEach(function(s){ existingSecByTitle[s.title.toLowerCase()]=s.id; });
+        function ensureSection(name){
+          const key=String(name).toLowerCase();
+          if(existingSecByTitle[key]) return existingSecByTitle[key];
+          const mo=d.sections.filter(function(s){return s.meetingId===mid;}).reduce(function(m,s){return Math.max(m,s.order);},-1);
+          const sid=uid('sec'); d.sections.push({id:sid,meetingId:mid,title:String(name).toUpperCase(),order:mo+1});
+          existingSecByTitle[key]=sid; return sid;
+        }
+        plan.newQuestions.forEach(function(row){
+          const norm=normalizeQ(row.q);
+          const dupNow=d.questions.find(function(q){ return q.meetingId===mid && normalizeQ(q.text)===norm; });
+          if(dupNow) return;
+          let sid;
+          if(row.target.indexOf('ex::')===0) sid=row.target.slice(4);
+          else sid=ensureSection('FROM TRANSCRIPT');
+          if(!d.sections.find(function(s){return s.id===sid&&s.meetingId===mid;})) sid=ensureSection('FROM TRANSCRIPT');
+          const mq=d.questions.filter(function(q){return q.sectionId===sid;}).reduce(function(m,q){return Math.max(m,q.order);},-1);
+          const newQ={id:uid('q'),meetingId:mid,sectionId:sid,text:row.q,status:'open',order:mq+1,result:null,resultFromAnswerId:null,resultBy:null,resultAt:null};
+          d.questions.push(newQ);
+          createdCount++;
+          if(row.answer){
+            d.answers.push({id:uid('ans'),questionId:newQ.id,userId:autoId,text:row.answer,updatedAt:new Date().toISOString()});
+            syncStatus(d,newQ);
+          }
+        });
+      });
+      UI.transcriptOpen=false; UI.transcriptResult=null; UI.transcriptText=''; UI.transcriptError=null;
+      toast(answeredCount+' answer(s) added, '+createdCount+' new question(s) created'); break;
+    }
+  }
+});
+
+document.addEventListener('keydown', function(e){
+  if(e.key==='Enter' && !e.shiftKey && e.target && e.target.id==='inputModalField'){
+    e.preventDefault();
+    const sb=document.querySelector('[data-action="input-submit"]');
+    if(sb) sb.click();
+    return;
+  }
+  if(e.key!=='Enter') return;
+  if(!UI.pwModal) return;
+  const tag=e.target && e.target.tagName;
+  if(tag!=='INPUT') return;
+  e.preventDefault();
+  const btn=document.querySelector('.modal-overlay [data-action^="pw-submit-"]');
+  if(btn) btn.click();
+});
+
+document.addEventListener('change', async function(e){
+  const sw=e.target.closest('[data-action="switch-workspace"]');
+  if(sw){ UI.currentMeetingId=sw.value; UI.filter='all'; UI.exportOpen=false; UI.bulkOpen=false; UI.bulkStatusMode=false; UI.bulkSelected={}; render(); return; }
+});
+
+/* ============================ BOOT ============================ */
+/* Only used when the shared database is empty and nobody has loaded the starter content yet. */
+async function bootstrapSeed(){
+  const holder='h_'+Math.random().toString(36).slice(2);
+  let lease;
+  try{ lease=await DB.doc('meta/seed').acquire({holder:holder,ttlMs:120000}); }catch(e){ return false; }
+  if(!lease || !lease.acquired) return false;
+  const check=remoteState();
+  if(check.users.length || check.projects.length) return true;
+  lastBase={};
+  const ok=await storeSet(seed());
+  return ok;
+}
+(async function init(){
+  const app=document.getElementById('app');
+  app.innerHTML='<p class="empty-hint" style="text-align:center;padding:40px 0">Loading shared data…</p>';
+  DB=await getDb(); hasStore=!!DB;
+  let data=null;
+  if(hasStore){
+    const definitive=await startSync();
+    data=await storeGet();
+    if(!data && definitive){
+      await bootstrapSeed();
+      for(let i=0;i<10 && !data;i++){ data=await storeGet(); if(!data) await delay(2000); }
+    }
+    if(!data){
+      app.innerHTML='<div class="storage-warn">Could not load the shared data yet. Reload the page in a moment. If this keeps happening, check that you have access to this artifact.</div>';
+      return;
+    }
+  }else{
+    data=seed(); memFallback=data;
+  }
+  STATE=data; render();
+})();
+
+</script>
