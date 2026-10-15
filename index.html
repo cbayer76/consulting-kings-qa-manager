@@ -55,6 +55,7 @@
   .filters{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
   .filter{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);padding:5px 11px;border-radius:20px}
   .filter.active{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+  .filter-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);align-self:center;margin-right:2px}
 
   .panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:22px;box-shadow:var(--shadow)}
   .panel h3{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 14px}
@@ -807,6 +808,14 @@ function currentMeetingName(){ const m=currentMeeting(); return m?(m.isOverall?'
 function meetingSections(mid){ return STATE.sections.filter(function(s){return s.meetingId===mid;}).sort(function(a,b){return a.order-b.order;}); }
 function meetingQuestions(mid){ return STATE.questions.filter(function(q){return q.meetingId===mid;}); }
 function meetingStats(mid){ const qs=meetingQuestions(mid); return {total:qs.length,open:qs.filter(function(q){return q.status==='open';}).length,disc:qs.filter(function(q){return q.status==='disc';}).length,solved:qs.filter(function(q){return q.status==='solved';}).length}; }
+/* A section's status: solved when every question has a result, open when any question has no answer yet, otherwise in discussion. */
+function sectionStatus(secId){
+  const qs=STATE.questions.filter(function(q){return q.sectionId===secId;});
+  if(qs.length && qs.every(function(q){return q.status==='solved';})) return 'solved';
+  if(!qs.length || qs.some(function(q){return q.status==='open';})) return 'open';
+  return 'disc';
+}
+function sectionMatchesFilter(secId){ return UI.filter==='all' || sectionStatus(secId)===UI.filter; }
 function hasResult(q){ return !!(q&&q.result&&String(q.result).trim()); }
 function syncStatus(d, q){
   if(!q) return;
@@ -880,7 +889,10 @@ function renderCore(){
   if(isAdmin()&&UI.adminOpen) html+=adminHTML();
   if(isAdmin()&&UI.bulkStatusMode) html+=bulkStatusPanelHTML();
   const secs=meetingSections(UI.currentMeetingId);
-  html+= secs.length ? secs.map(sectionHTML).join('') : emptyMeetingHTML();
+  const shownSecs=secs.filter(function(sec){ return sectionMatchesFilter(sec.id); });
+  if(!secs.length) html+=emptyMeetingHTML();
+  else if(!shownSecs.length) html+='<p class="empty-hint">No sections match this filter.</p>';
+  else html+=shownSecs.map(sectionHTML).join('');
   html+=addSectionHTML();
   if(UI.exportOpen) html+=exportModalHTML();
   if(UI.bulkOpen) html+=bulkModalHTML();
@@ -1140,16 +1152,19 @@ function statsHTML(){
   const qs=meetingQuestions(UI.currentMeetingId);
   const o=qs.filter(function(q){return q.status==='open';}).length, d=qs.filter(function(q){return q.status==='disc';}).length, s=qs.filter(function(q){return q.status==='solved';}).length;
   const f=UI.filter;
+  const sc={all:0,open:0,disc:0,solved:0};
+  meetingSections(UI.currentMeetingId).forEach(function(sec){ sc.all++; sc[sectionStatus(sec.id)]++; });
   return '<div class="statsbar">'+
     '<span class="stat"><span class="dot open"></span>Open <b>'+o+'</b></span>'+
     '<span class="stat"><span class="dot disc"></span>In discussion <b>'+d+'</b></span>'+
     '<span class="stat"><span class="dot solved"></span>Solved <b>'+s+'</b></span>'+
     '<span class="stat">Total <b>'+qs.length+'</b></span>'+
     '<div class="filters">'+
-      '<button class="filter '+(f==='all'?'active':'')+'" data-action="filter" data-v="all">All</button>'+
-      '<button class="filter '+(f==='open'?'active':'')+'" data-action="filter" data-v="open">Open</button>'+
-      '<button class="filter '+(f==='disc'?'active':'')+'" data-action="filter" data-v="disc">Discussion</button>'+
-      '<button class="filter '+(f==='solved'?'active':'')+'" data-action="filter" data-v="solved">Solved</button>'+
+      '<span class="filter-label">Sections</span>'+
+      '<button class="filter '+(f==='all'?'active':'')+'" data-action="filter" data-v="all" title="All sections">All ('+sc.all+')</button>'+
+      '<button class="filter '+(f==='open'?'active':'')+'" data-action="filter" data-v="open" title="Sections with at least one unanswered question">Open ('+sc.open+')</button>'+
+      '<button class="filter '+(f==='disc'?'active':'')+'" data-action="filter" data-v="disc" title="Every question answered, not all have a result yet">Discussion ('+sc.disc+')</button>'+
+      '<button class="filter '+(f==='solved'?'active':'')+'" data-action="filter" data-v="solved" title="Every question has a result">Solved ('+sc.solved+')</button>'+
     '</div>'+
   '</div>';
 }
@@ -1199,17 +1214,15 @@ function sectionHTML(sec){
   const qs=STATE.questions.filter(function(q){return q.sectionId===sec.id;}).sort(function(a,b){return a.order-b.order;});
   const secs=meetingSections(sec.meetingId);
   const num=secs.findIndex(function(s){return s.id===sec.id;})+1;
-  const filtered=qs.filter(function(q){return UI.filter==='all'||q.status===UI.filter;});
+  const filtered=qs;
   const solvedN=qs.filter(function(q){return q.status==='solved';}).length;
   const done=qs.length>0 && solvedN===qs.length;
   const pct=qs.length?Math.round(100*solvedN/qs.length):0;
-  const visibleNote=(UI.filter!=='all')?(filtered.length+'/'+qs.length+' shown'):(qs.length?(solvedN+'/'+qs.length+' solved'):'0 questions');
+  const visibleNote=qs.length?(solvedN+'/'+qs.length+' solved'):'0 questions';
   let body='';
   if(qs.length===0){
     body+='<p class="empty-hint">No questions yet in this section.</p>';
-  }else if(filtered.length===0){
-    body+='<p class="empty-hint">No questions match the current filter.</p>';
-  }else if(UI.filter==='all'){
+  }else{
     const activeQs=filtered.filter(function(q){return q.status!=='solved';});
     const solvedQs=filtered.filter(function(q){return q.status==='solved';});
     if(activeQs.length===0 && solvedQs.length>0) body+='<p class="empty-hint">All questions in this section are solved — see below.</p>';
@@ -1224,8 +1237,6 @@ function sectionHTML(sec){
         '</div>'+
         (sCollapsed?'':solvedQs.map(function(q){ return questionHTML(q, qs.indexOf(q)+1); }).join(''));
     }
-  }else{
-    body+=filtered.map(function(q){ return questionHTML(q, qs.indexOf(q)+1); }).join('');
   }
   const addOpen=!!UI.addQOpen[sec.id];
   body+='<div class="sec-tools">'+
@@ -1859,7 +1870,7 @@ document.addEventListener('click', async function(e){
       render(); break;
     }
     case 'bulk-select-all':{
-      const qs=meetingQuestions(UI.currentMeetingId).filter(function(q){return UI.filter==='all'||q.status===UI.filter;});
+      const qs=meetingQuestions(UI.currentMeetingId).filter(function(q){return sectionMatchesFilter(q.sectionId);});
       qs.forEach(function(q){ UI.bulkSelected[q.id]=true; });
       render(); break;
     }
