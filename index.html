@@ -93,6 +93,12 @@
   .section.collapsed .sec-body{display:none}
   .sec-body{padding:4px 20px 18px;border-top:1px solid var(--line)}
   .sec-tools{display:flex;gap:8px;padding:12px 0 4px;flex-wrap:wrap;align-items:center}
+  .sec-progress{height:6px;background:var(--line);margin:0 20px 14px;border-radius:4px;overflow:hidden}
+  .sec-progress i{display:block;height:100%;background:var(--gold);border-radius:4px;transition:width .3s}
+  .section.done{border-color:var(--green);box-shadow:0 0 0 1px var(--green),var(--shadow)}
+  .section.done .sec-progress i{background:var(--green)}
+  .section.done .sec-meta{color:var(--green);font-weight:600}
+  @media (prefers-reduced-motion:reduce){.sec-progress i{transition:none}}
 
   .q{padding:16px 0;border-bottom:1px solid var(--line)}
   .q:last-child{border-bottom:none}
@@ -1195,7 +1201,10 @@ function sectionHTML(sec){
   const secs=meetingSections(sec.meetingId);
   const num=secs.findIndex(function(s){return s.id===sec.id;})+1;
   const filtered=qs.filter(function(q){return UI.filter==='all'||q.status===UI.filter;});
-  const visibleNote=(UI.filter!=='all')?(filtered.length+'/'+qs.length+' shown'):(qs.length+' question'+(qs.length!==1?'s':''));
+  const solvedN=qs.filter(function(q){return q.status==='solved';}).length;
+  const done=qs.length>0 && solvedN===qs.length;
+  const pct=qs.length?Math.round(100*solvedN/qs.length):0;
+  const visibleNote=(UI.filter!=='all')?(filtered.length+'/'+qs.length+' shown'):(qs.length?(solvedN+'/'+qs.length+' solved'):'0 questions');
   let body='';
   if(qs.length===0){
     body+='<p class="empty-hint">No questions yet in this section.</p>';
@@ -1232,13 +1241,14 @@ function sectionHTML(sec){
         '<button class="btn ghost tiny" data-action="toggle-addq" data-id="'+sec.id+'">Cancel</button>'+
       '</div>'+
     '</div>';
-  return '<section class="section '+(collapsed?'collapsed':'')+'" data-sec="'+sec.id+'">'+
+  return '<section class="section '+(collapsed?'collapsed':'')+(done?' done':'')+'" data-sec="'+sec.id+'">'+
     '<div class="sec-head" data-action="toggle-section" data-id="'+sec.id+'">'+
       '<span class="sec-num">'+String(num).padStart(2,'0')+'</span>'+
       '<span class="sec-title">'+esc(sec.title)+'</span>'+
       '<span class="sec-meta">'+visibleNote+'</span>'+
       '<span class="chev">▾</span>'+
     '</div>'+
+    '<div class="sec-progress" role="progressbar" aria-label="Solved questions" aria-valuemin="0" aria-valuemax="'+qs.length+'" aria-valuenow="'+solvedN+'"><i style="width:'+pct+'%"></i></div>'+
     '<div class="sec-body">'+body+'</div>'+
   '</section>';
 }
